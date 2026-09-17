@@ -9,13 +9,23 @@
   </head>
   <body>
     <div class="admin-nav">
-      <div class="brand">SarcoCare <span class="dot">Admin</span></div>
+      <div class="brand">
+        <span class="brand-mark"><%= admin_icon(:heart, size: 18) %></span>
+        SarcoCare <span class="dot">Admin</span>
+      </div>
       <nav>
-        <%= link_to "Dashboard", admin_root_path, class: ("active" if controller_name == "dashboard") %>
-        <%= link_to "Patients", admin_patients_path, class: ("active" if controller_name == "patients") %>
-        <%= link_to "Caretakers", admin_caretakers_path, class: ("active" if controller_name == "caretakers") %>
+        <%= link_to admin_root_path, class: ("active" if controller_name == "dashboard") do %>
+          <%= admin_icon(:clipboard, size: 16) %> Dashboard
+        <% end %>
+        <%= link_to admin_patients_path, class: ("active" if controller_name == "patients") do %>
+          <%= admin_icon(:heart, size: 16) %> Patients
+        <% end %>
+        <%= link_to admin_caretakers_path, class: ("active" if controller_name == "caretakers") do %>
+          <%= admin_icon(:people, size: 16) %> Caretakers
+        <% end %>
       </nav>
       <div class="who">
+        <%= avatar(current_admin.full_name, size: 32) %>
         <span><%= current_admin.full_name %></span>
         <%= button_to "Log out", admin_logout_path, method: :delete, class: "btn btn-outline btn-sm", form: { style: "display:inline" } %>
       </div>

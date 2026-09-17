@@ -3,51 +3,98 @@
 
 <div class="stat-grid">
   <div class="stat-card">
-    <div class="value"><%= @patient_count %></div>
-    <div class="label">Patients</div>
+    <div class="top-row">
+      <div class="icon-badge icon-badge-primary"><%= admin_icon(:heart) %></div>
+    </div>
+    <div>
+      <div class="value"><%= @patient_count %></div>
+      <div class="label">Patients</div>
+    </div>
   </div>
   <div class="stat-card">
-    <div class="value"><%= @caretaker_count %></div>
-    <div class="label">Caretakers</div>
+    <div class="top-row">
+      <div class="icon-badge icon-badge-blue"><%= admin_icon(:people) %></div>
+    </div>
+    <div>
+      <div class="value"><%= @caretaker_count %></div>
+      <div class="label">Caretakers</div>
+    </div>
   </div>
   <div class="stat-card">
-    <div class="value"><%= @pending_links_count %></div>
-    <div class="label">Pending care link requests</div>
+    <div class="top-row">
+      <div class="icon-badge icon-badge-gold"><%= admin_icon(:clock) %></div>
+    </div>
+    <div>
+      <div class="value"><%= @pending_links_count %></div>
+      <div class="label">Pending care link requests</div>
+    </div>
   </div>
 </div>
 
-<div class="section-title">Newest patients</div>
+<% total = @patient_count + @caretaker_count %>
+<% if total.positive? %>
+  <div class="card">
+    <div class="card-header">
+      <div class="icon-badge icon-badge-primary" style="width:36px;height:36px;"><%= admin_icon(:people, size: 18) %></div>
+      <h2>Patients vs caretakers</h2>
+    </div>
+    <div class="bar-chart">
+      <div class="seg patients" style="width: <%= (@patient_count.to_f / total * 100).round(1) %>%"></div>
+      <div class="seg caretakers" style="width: <%= (@caretaker_count.to_f / total * 100).round(1) %>%"></div>
+    </div>
+    <div class="legend">
+      <span><span class="dot" style="background:var(--primary)"></span>Patients (<%= @patient_count %>)</span>
+      <span><span class="dot" style="background:var(--blue)"></span>Caretakers (<%= @caretaker_count %>)</span>
+    </div>
+  </div>
+<% end %>
+
+<div class="section-title"><%= admin_icon(:heart, size: 16) %> Newest patients</div>
 <% if @recent_patients.any? %>
-  <table>
-    <thead><tr><th>Name</th><th>Phone</th><th>Joined</th></tr></thead>
-    <tbody>
-      <% @recent_patients.each do |p| %>
-        <tr>
-          <td><%= link_to p.full_name, admin_patient_path(p) %></td>
-          <td><%= p.phone_number %></td>
-          <td><%= p.created_at.strftime("%b %d, %Y") %></td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Name</th><th>Phone</th><th>Joined</th></tr></thead>
+      <tbody>
+        <% @recent_patients.each do |p| %>
+          <tr>
+            <td>
+              <div class="name-cell">
+                <%= avatar(p.full_name, size: 32) %>
+                <%= link_to p.full_name, admin_patient_path(p) %>
+              </div>
+            </td>
+            <td><%= p.phone_number %></td>
+            <td><%= p.created_at.strftime("%b %d, %Y") %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
 <% else %>
   <p class="empty">No patients yet.</p>
 <% end %>
 
-<div class="section-title">Newest caretakers</div>
+<div class="section-title"><%= admin_icon(:people, size: 16) %> Newest caretakers</div>
 <% if @recent_caretakers.any? %>
-  <table>
-    <thead><tr><th>Name</th><th>Phone</th><th>Joined</th></tr></thead>
-    <tbody>
-      <% @recent_caretakers.each do |c| %>
-        <tr>
-          <td><%= link_to c.full_name, admin_caretaker_path(c) %></td>
-          <td><%= c.phone_number %></td>
-          <td><%= c.created_at.strftime("%b %d, %Y") %></td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Name</th><th>Phone</th><th>Joined</th></tr></thead>
+      <tbody>
+        <% @recent_caretakers.each do |c| %>
+          <tr>
+            <td>
+              <div class="name-cell">
+                <%= avatar(c.full_name, size: 32) %>
+                <%= link_to c.full_name, admin_caretaker_path(c) %>
+              </div>
+            </td>
+            <td><%= c.phone_number %></td>
+            <td><%= c.created_at.strftime("%b %d, %Y") %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
 <% else %>
   <p class="empty">No caretakers yet.</p>
 <% end %>

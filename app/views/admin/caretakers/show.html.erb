@@ -1,46 +1,64 @@
 <p class="subtitle"><%= link_to "← All caretakers", admin_caretakers_path %></p>
-<h1><%= @caretaker.full_name %></h1>
-<p class="subtitle">
-  <%= @caretaker.phone_number %>
-  <% if @caretaker.email.present? %> · <%= @caretaker.email %><% end %>
-</p>
-
-<div class="meta-row">
-  <%= link_to "Edit", edit_admin_caretaker_path(@caretaker), class: "btn btn-outline btn-sm" %>
-  <%= button_to "Delete account", admin_caretaker_path(@caretaker), method: :delete, class: "btn btn-danger btn-sm",
-        form: { onsubmit: "return confirm('Delete #{j @caretaker.full_name}\\'s account? This can\\'t be undone.')", style: "display:inline" } %>
+<div class="profile-header">
+  <%= avatar(@caretaker.full_name, size: 56) %>
+  <div>
+    <h1 style="margin-bottom:2px"><%= @caretaker.full_name %></h1>
+    <p class="subtitle" style="margin:0">
+      <%= @caretaker.phone_number %>
+      <% if @caretaker.email.present? %> · <%= @caretaker.email %><% end %>
+    </p>
+  </div>
 </div>
 
-<div class="section-title">Linked patients</div>
+<div class="meta-row">
+  <%= link_to edit_admin_caretaker_path(@caretaker), class: "btn btn-outline btn-sm" do %>
+    <%= admin_icon(:person, size: 14) %> Edit
+  <% end %>
+  <%= button_to admin_caretaker_path(@caretaker), method: :delete, class: "btn btn-danger btn-sm",
+        form: { onsubmit: "return confirm('Delete #{j @caretaker.full_name}\\'s account? This can\\'t be undone.')", style: "display:inline" } do %>
+    <%= admin_icon(:warning, size: 14) %> Delete account
+  <% end %>
+</div>
+
+<div class="section-title"><%= admin_icon(:heart, size: 16) %> Linked patients</div>
 <% if @patients.any? %>
-  <table>
-    <thead><tr><th>Name</th><th>Relationship</th></tr></thead>
-    <tbody>
-      <% @patients.each do |link| %>
-        <tr>
-          <td><%= link_to link.patient.full_name, admin_patient_path(link.patient) %></td>
-          <td><%= link.relationship || "—" %></td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Name</th><th>Relationship</th></tr></thead>
+      <tbody>
+        <% @patients.each do |link| %>
+          <tr>
+            <td>
+              <div class="name-cell">
+                <%= avatar(link.patient.full_name, size: 32) %>
+                <%= link_to link.patient.full_name, admin_patient_path(link.patient) %>
+              </div>
+            </td>
+            <td><%= link.relationship || "—" %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
 <% else %>
   <p class="empty">No linked patients.</p>
 <% end %>
 
-<div class="section-title">Pending requests sent</div>
+<div class="section-title"><%= admin_icon(:clock, size: 16) %> Pending requests sent</div>
 <% if @pending_links.any? %>
-  <table>
-    <thead><tr><th>Patient</th><th>Sent</th></tr></thead>
-    <tbody>
-      <% @pending_links.each do |link| %>
-        <tr>
-          <td><%= link.patient.full_name %></td>
-          <td><%= link.created_at.strftime("%b %d, %Y") %></td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Patient</th><th>Sent</th></tr></thead>
+      <tbody>
+        <% @pending_links.each do |link| %>
+          <tr>
+            <td><%= link.patient.full_name %></td>
+            <td><%= link.created_at.strftime("%b %d, %Y") %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
 <% else %>
   <p class="empty">No pending requests.</p>
 <% end %>

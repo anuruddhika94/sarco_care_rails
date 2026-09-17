@@ -3,24 +3,31 @@
 
 <%= form_with url: admin_patients_path, method: :get, class: "search-row" do %>
   <input type="text" name="q" value="<%= params[:q] %>" placeholder="Search by name or phone…">
-  <button type="submit" class="btn btn-outline">Search</button>
+  <button type="submit" class="btn btn-outline"><%= admin_icon(:person, size: 16) %> Search</button>
 <% end %>
 
 <% if @patients.any? %>
-  <table>
-    <thead><tr><th>Name</th><th>Phone</th><th>Age</th><th>Joined</th><th></th></tr></thead>
-    <tbody>
-      <% @patients.each do |p| %>
-        <tr>
-          <td><%= link_to p.full_name, admin_patient_path(p) %></td>
-          <td><%= p.phone_number %></td>
-          <td><%= p.age || "—" %></td>
-          <td><%= p.created_at.strftime("%b %d, %Y") %></td>
-          <td><%= link_to "View", admin_patient_path(p), class: "btn btn-outline btn-sm" %></td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Name</th><th>Phone</th><th>Age</th><th>Joined</th><th></th></tr></thead>
+      <tbody>
+        <% @patients.each do |p| %>
+          <tr>
+            <td>
+              <div class="name-cell">
+                <%= avatar(p.full_name, size: 36) %>
+                <%= link_to p.full_name, admin_patient_path(p) %>
+              </div>
+            </td>
+            <td><%= p.phone_number %></td>
+            <td><%= p.age || "—" %></td>
+            <td><%= p.created_at.strftime("%b %d, %Y") %></td>
+            <td><%= link_to "View", admin_patient_path(p), class: "btn btn-outline btn-sm" %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
 <% else %>
   <p class="empty">No patients found.</p>
 <% end %>

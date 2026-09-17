@@ -4,6 +4,10 @@ module Admin
     layout "admin"
     protect_from_forgery with: :exception
 
+    # API-only mode skips Rails' usual "include every app/helpers module
+    # into every controller's views" wiring, so it's declared explicitly.
+    helper AdminHelper
+
     before_action :require_admin
 
     helper_method :current_admin

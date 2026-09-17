@@ -3,23 +3,30 @@
 
 <%= form_with url: admin_caretakers_path, method: :get, class: "search-row" do %>
   <input type="text" name="q" value="<%= params[:q] %>" placeholder="Search by name or phone…">
-  <button type="submit" class="btn btn-outline">Search</button>
+  <button type="submit" class="btn btn-outline"><%= admin_icon(:person, size: 16) %> Search</button>
 <% end %>
 
 <% if @caretakers.any? %>
-  <table>
-    <thead><tr><th>Name</th><th>Phone</th><th>Joined</th><th></th></tr></thead>
-    <tbody>
-      <% @caretakers.each do |c| %>
-        <tr>
-          <td><%= link_to c.full_name, admin_caretaker_path(c) %></td>
-          <td><%= c.phone_number %></td>
-          <td><%= c.created_at.strftime("%b %d, %Y") %></td>
-          <td><%= link_to "View", admin_caretaker_path(c), class: "btn btn-outline btn-sm" %></td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Name</th><th>Phone</th><th>Joined</th><th></th></tr></thead>
+      <tbody>
+        <% @caretakers.each do |c| %>
+          <tr>
+            <td>
+              <div class="name-cell">
+                <%= avatar(c.full_name, size: 36) %>
+                <%= link_to c.full_name, admin_caretaker_path(c) %>
+              </div>
+            </td>
+            <td><%= c.phone_number %></td>
+            <td><%= c.created_at.strftime("%b %d, %Y") %></td>
+            <td><%= link_to "View", admin_caretaker_path(c), class: "btn btn-outline btn-sm" %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
 <% else %>
   <p class="empty">No caretakers found.</p>
 <% end %>

@@ -1,69 +1,89 @@
 <p class="subtitle"><%= link_to "← All patients", admin_patients_path %></p>
-<h1><%= @patient.full_name %></h1>
-<p class="subtitle">
-  <%= @patient.phone_number %>
-  <% if @patient.email.present? %> · <%= @patient.email %><% end %>
-  <% if @patient.age %> · Age <%= @patient.age %><% end %>
-  <% if @patient.gender %> · <%= @patient.gender.capitalize %><% end %>
-</p>
-
-<div class="meta-row">
-  <%= link_to "Edit", edit_admin_patient_path(@patient), class: "btn btn-outline btn-sm" %>
-  <%= button_to "Delete account", admin_patient_path(@patient), method: :delete, class: "btn btn-danger btn-sm",
-        form: { onsubmit: "return confirm('Delete #{j @patient.full_name}\\'s account? This can\\'t be undone.')", style: "display:inline" } %>
+<div class="profile-header">
+  <%= avatar(@patient.full_name, size: 56) %>
+  <div>
+    <h1 style="margin-bottom:2px"><%= @patient.full_name %></h1>
+    <p class="subtitle" style="margin:0">
+      <%= @patient.phone_number %>
+      <% if @patient.email.present? %> · <%= @patient.email %><% end %>
+      <% if @patient.age %> · Age <%= @patient.age %><% end %>
+      <% if @patient.gender %> · <%= @patient.gender.capitalize %><% end %>
+    </p>
+  </div>
 </div>
 
-<div class="section-title">Linked caretakers</div>
+<div class="meta-row">
+  <%= link_to edit_admin_patient_path(@patient), class: "btn btn-outline btn-sm" do %>
+    <%= admin_icon(:person, size: 14) %> Edit
+  <% end %>
+  <%= button_to admin_patient_path(@patient), method: :delete, class: "btn btn-danger btn-sm",
+        form: { onsubmit: "return confirm('Delete #{j @patient.full_name}\\'s account? This can\\'t be undone.')", style: "display:inline" } do %>
+    <%= admin_icon(:warning, size: 14) %> Delete account
+  <% end %>
+</div>
+
+<div class="section-title"><%= admin_icon(:people, size: 16) %> Linked caretakers</div>
 <% if @caretakers.any? %>
-  <table>
-    <thead><tr><th>Name</th><th>Relationship</th></tr></thead>
-    <tbody>
-      <% @caretakers.each do |link| %>
-        <tr>
-          <td><%= link_to link.caretaker.full_name, admin_caretaker_path(link.caretaker) %></td>
-          <td><%= link.relationship || "—" %></td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Name</th><th>Relationship</th></tr></thead>
+      <tbody>
+        <% @caretakers.each do |link| %>
+          <tr>
+            <td>
+              <div class="name-cell">
+                <%= avatar(link.caretaker.full_name, size: 32) %>
+                <%= link_to link.caretaker.full_name, admin_caretaker_path(link.caretaker) %>
+              </div>
+            </td>
+            <td><%= link.relationship || "—" %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
 <% else %>
   <p class="empty">No linked caretakers.</p>
 <% end %>
 
-<div class="section-title">Recent health readings</div>
+<div class="section-title"><%= admin_icon(:heart, size: 16) %> Recent health readings</div>
 <% if @health_readings.any? %>
-  <table>
-    <thead><tr><th>Date</th><th>Weight</th><th>Height</th><th>BMI</th><th>Calf</th></tr></thead>
-    <tbody>
-      <% @health_readings.each do |r| %>
-        <tr>
-          <td><%= r.recorded_on.strftime("%b %d, %Y") %></td>
-          <td><%= r.weight_kg ? "#{r.weight_kg} kg" : "—" %></td>
-          <td><%= r.height_cm ? "#{r.height_cm} cm" : "—" %></td>
-          <td><%= r.bmi || "—" %></td>
-          <td><%= r.calf_cm ? "#{r.calf_cm} cm" : "—" %></td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Date</th><th>Weight</th><th>Height</th><th>BMI</th><th>Calf</th></tr></thead>
+      <tbody>
+        <% @health_readings.each do |r| %>
+          <tr>
+            <td><%= r.recorded_on.strftime("%b %d, %Y") %></td>
+            <td><%= r.weight_kg ? "#{r.weight_kg} kg" : "—" %></td>
+            <td><%= r.height_cm ? "#{r.height_cm} cm" : "—" %></td>
+            <td><%= r.bmi || "—" %></td>
+            <td><%= r.calf_cm ? "#{r.calf_cm} cm" : "—" %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
 <% else %>
   <p class="empty">No health readings logged.</p>
 <% end %>
 
-<div class="section-title">Recent SARC-F assessments</div>
+<div class="section-title"><%= admin_icon(:clipboard, size: 16) %> Recent SARC-F assessments</div>
 <% if @assessments.any? %>
-  <table>
-    <thead><tr><th>Date</th><th>Score</th><th>Risk</th></tr></thead>
-    <tbody>
-      <% @assessments.each do |a| %>
-        <tr>
-          <td><%= a.completed_at.strftime("%b %d, %Y") %></td>
-          <td><%= a.score %></td>
-          <td><span class="badge <%= a.risk_level == 'low' ? 'approved' : (a.risk_level == 'high' ? 'declined' : 'pending') %>"><%= a.risk_level %></span></td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Date</th><th>Score</th><th>Risk</th></tr></thead>
+      <tbody>
+        <% @assessments.each do |a| %>
+          <tr>
+            <td><%= a.completed_at.strftime("%b %d, %Y") %></td>
+            <td><%= a.score %></td>
+            <td><span class="badge <%= a.risk_level == 'low' ? 'approved' : (a.risk_level == 'high' ? 'declined' : 'pending') %>"><%= a.risk_level %></span></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
 <% else %>
   <p class="empty">No assessments completed.</p>
 <% end %>

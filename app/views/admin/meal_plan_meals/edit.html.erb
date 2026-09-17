@@ -1,0 +1,43 @@
+<p class="subtitle"><%= link_to "← Day #{@day.day_number}", edit_admin_meal_plan_day_path(@day) %></p>
+<h1>Edit meal</h1>
+
+<% if @meal.image.present? %>
+  <img src="<%= @meal.image %>" style="border-radius:12px;max-width:280px;display:block;margin-bottom:20px" onerror="this.style.display='none'">
+<% end %>
+
+<div class="card">
+  <%= render "form", url: admin_meal_plan_day_meal_plan_meal_path(@day, @meal), method: :patch, submit_label: "Save changes" %>
+</div>
+
+<div class="meta-row" style="justify-content: space-between;">
+  <h2 style="margin:0">Items</h2>
+  <%= link_to new_admin_meal_plan_meal_meal_plan_item_path(@meal), class: "btn btn-primary btn-sm" do %>
+    + Add item
+  <% end %>
+</div>
+
+<% if @meal.meal_plan_items.any? %>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Name</th><th>Protein</th><th></th></tr></thead>
+      <tbody>
+        <% @meal.meal_plan_items.order(:position).each do |item| %>
+          <tr>
+            <td>
+              <div style="font-weight:700"><%= item.name_en %></div>
+              <div style="color:var(--text-muted);font-size:13px"><%= item.name_th %></div>
+            </td>
+            <td><%= item.protein_en %></td>
+            <td style="white-space:nowrap">
+              <%= link_to "Edit", edit_admin_meal_plan_meal_meal_plan_item_path(@meal, item), class: "btn btn-outline btn-sm" %>
+              <%= button_to "Delete", admin_meal_plan_meal_meal_plan_item_path(@meal, item), method: :delete, class: "btn btn-danger btn-sm",
+                    form: { onsubmit: "return confirm('Remove #{j item.name_en}?')", style: "display:inline" } %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% else %>
+  <p class="empty">No items yet — add the dish components that make up this meal.</p>
+<% end %>

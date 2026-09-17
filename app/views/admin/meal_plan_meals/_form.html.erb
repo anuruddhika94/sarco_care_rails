@@ -1,0 +1,46 @@
+<% if @meal.errors.any? %>
+  <div class="error-list">
+    <% @meal.errors.full_messages.each do |msg| %>
+      <div><%= msg %></div>
+    <% end %>
+  </div>
+<% end %>
+
+<%= form_with model: @meal, url: url, method: method, multipart: true do |f| %>
+  <div class="field">
+    <%= f.label :slot %>
+    <%= f.select :slot, MealPlanMeal.slots.keys.map { |s| [s.humanize, s] } %>
+  </div>
+  <div class="field">
+    <%= f.label :title_en, "Title (English)" %>
+    <%= f.text_field :title_en %>
+  </div>
+  <div class="field">
+    <%= f.label :title_th, "Title (Thai)" %>
+    <%= f.text_field :title_th %>
+  </div>
+  <div class="field">
+    <%= f.label :icon, "Fallback icon (shown when there's no photo)" %>
+    <%= f.select :icon, Admin::MealPlanMealsController::ICONS.map { |i| [i.humanize, i] } %>
+  </div>
+  <div class="field">
+    <%= f.label :photo, "Dish photo" %>
+    <% if @meal.photo.attached? %>
+      <img src="<%= url_for(@meal.photo) %>" style="border-radius:10px;max-width:200px;display:block;margin-bottom:10px">
+    <% end %>
+    <%= f.file_field :photo, accept: "image/*" %>
+  </div>
+  <div class="field">
+    <%= f.label :image, "…or a photo URL, used only if no file is uploaded above" %>
+    <%= f.text_field :image, placeholder: "https://…" %>
+  </div>
+  <div class="field">
+    <%= f.label :total_protein_en, "Total protein (English)" %>
+    <%= f.text_field :total_protein_en, placeholder: "e.g. ~28g protein" %>
+  </div>
+  <div class="field">
+    <%= f.label :total_protein_th, "Total protein (Thai)" %>
+    <%= f.text_field :total_protein_th %>
+  </div>
+  <button type="submit" class="btn btn-primary"><%= submit_label %></button>
+<% end %>

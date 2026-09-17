@@ -26,6 +26,9 @@
         <%= link_to admin_exercises_path, class: ("active" if controller_name == "exercises") do %>
           <%= admin_icon(:dumbbell, size: 16) %> Exercises
         <% end %>
+        <%= link_to admin_meal_plan_days_path, class: ("active" if controller_name.start_with?("meal_plan_")) do %>
+          <%= admin_icon(:meal, size: 16) %> Meals
+        <% end %>
       </nav>
       <div class="who">
         <%= avatar(current_admin.full_name, size: 32) %>

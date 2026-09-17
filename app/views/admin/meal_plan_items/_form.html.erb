@@ -1,0 +1,27 @@
+<% if @item.errors.any? %>
+  <div class="error-list">
+    <% @item.errors.full_messages.each do |msg| %>
+      <div><%= msg %></div>
+    <% end %>
+  </div>
+<% end %>
+
+<%= form_with model: @item, url: url, method: method do |f| %>
+  <div class="field">
+    <%= f.label :name_en, "Name (English)" %>
+    <%= f.text_field :name_en, placeholder: "e.g. Steamed jasmine rice" %>
+  </div>
+  <div class="field">
+    <%= f.label :name_th, "Name (Thai)" %>
+    <%= f.text_field :name_th %>
+  </div>
+  <div class="field">
+    <%= f.label :protein_en, "Protein (English)" %>
+    <%= f.text_field :protein_en, placeholder: "e.g. ~3g protein" %>
+  </div>
+  <div class="field">
+    <%= f.label :protein_th, "Protein (Thai)" %>
+    <%= f.text_field :protein_th %>
+  </div>
+  <button type="submit" class="btn btn-primary"><%= submit_label %></button>
+<% end %>

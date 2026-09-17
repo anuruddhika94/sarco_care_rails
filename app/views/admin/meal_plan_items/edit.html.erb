@@ -1,0 +1,4 @@
+<p class="subtitle"><%= link_to "← #{@meal.title_en}", edit_admin_meal_plan_day_meal_plan_meal_path(@meal.meal_plan_day, @meal) %></p>
+<h1>Edit item</h1>
+
+<%= render "form", url: admin_meal_plan_meal_meal_plan_item_path(@meal, @item), method: :patch, submit_label: "Save changes" %>

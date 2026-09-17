@@ -1,0 +1,4 @@
+<p class="subtitle"><%= link_to "← Day #{@day.day_number}", edit_admin_meal_plan_day_path(@day) %></p>
+<h1>Add meal</h1>
+
+<%= render "form", url: admin_meal_plan_day_meal_plan_meals_path(@day), method: :post, submit_label: "Add meal" %>

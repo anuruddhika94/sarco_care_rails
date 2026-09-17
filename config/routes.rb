@@ -9,9 +9,16 @@ Rails.application.routes.draw do
     post "login", to: "sessions#create"
     delete "logout", to: "sessions#destroy"
 
-    resources :patients, only: [:index, :show, :edit, :update, :destroy]
-    resources :caretakers, only: [:index, :show, :edit, :update, :destroy]
-    resources :exercises, only: [:index, :new, :create, :edit, :update, :destroy]
+    resources :patients, only: [ :index, :show, :edit, :update, :destroy ]
+    resources :caretakers, only: [ :index, :show, :edit, :update, :destroy ]
+    resources :exercises, only: [ :index, :new, :create, :edit, :update, :destroy ]
+
+    resources :meal_plan_days, only: [ :index, :edit, :update ] do
+      resources :meal_plan_meals, only: [ :new, :create, :edit, :update, :destroy ]
+    end
+    resources :meal_plan_meals, only: [] do
+      resources :meal_plan_items, only: [ :new, :create, :edit, :update, :destroy ]
+    end
   end
 
   namespace :api do
@@ -19,25 +26,25 @@ Rails.application.routes.draw do
       post "auth/signup", to: "auth#signup"
       post "auth/login", to: "auth#login"
 
-      resource :me, only: [:show, :update], controller: :me
+      resource :me, only: [ :show, :update ], controller: :me
 
-      resources :care_links, only: [:index, :create, :update] do
+      resources :care_links, only: [ :index, :create, :update ] do
         collection { get :lookup }
       end
 
-      resources :health_readings, only: [:index, :create]
-      resources :assessments, only: [:index, :create]
+      resources :health_readings, only: [ :index, :create ]
+      resources :assessments, only: [ :index, :create ]
 
-      resource :meal_plan, only: [:show], controller: :meal_plans
-      resources :meal_logs, only: [:index, :create]
+      resource :meal_plan, only: [ :show ], controller: :meal_plans
+      resources :meal_logs, only: [ :index, :create ]
 
-      resources :exercises, only: [:index]
-      resources :exercise_logs, only: [:index, :create]
+      resources :exercises, only: [ :index ]
+      resources :exercise_logs, only: [ :index, :create ]
 
-      resources :articles, only: [:index, :show]
-      resources :reminders, only: [:index, :update]
+      resources :articles, only: [ :index, :show ]
+      resources :reminders, only: [ :index, :update ]
 
-      resources :daily_goals, only: [:index]
+      resources :daily_goals, only: [ :index ]
     end
   end
 end

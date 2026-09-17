@@ -1,0 +1,24 @@
+<h1>Meal plan</h1>
+<p class="subtitle">The shared 3-day rotating plan every patient sees — edit a day to manage its meals.</p>
+
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Day</th><th>Label</th><th>Day total</th><th>Meals</th><th></th></tr></thead>
+    <tbody>
+      <% @days.each do |day| %>
+        <tr>
+          <td style="font-weight:700">Day <%= day.day_number %></td>
+          <td>
+            <div style="font-weight:700"><%= day.label_en %></div>
+            <div style="color:var(--text-muted);font-size:13px"><%= day.label_th %></div>
+          </td>
+          <td><%= day.day_total_en %></td>
+          <td><%= day.meal_plan_meals.size %></td>
+          <td style="white-space:nowrap">
+            <%= link_to "Edit", edit_admin_meal_plan_day_path(day), class: "btn btn-outline btn-sm" %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

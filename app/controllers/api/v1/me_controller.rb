@@ -16,7 +16,7 @@ module Api
       private
 
       def me_params
-        params.permit(:full_name, :email, :date_of_birth, :gender, :avatar_url, settings: {})
+        params.permit(:full_name, :email, :date_of_birth, :gender, :avatar, settings: {})
       end
     end
   end

@@ -1,5 +1,6 @@
 class User < ApplicationRecord
   has_secure_password
+  has_one_attached :avatar
 
   enum :role, { patient: 0, caretaker: 1 }
   enum :gender, { male: 0, female: 1, other: 2 }, prefix: true
@@ -56,11 +57,16 @@ class User < ApplicationRecord
     ((Date.current - date_of_birth) / 365.25).floor
   end
 
+  def avatar_url
+    return nil unless avatar.attached?
+    Rails.application.routes.url_helpers.rails_blob_url(avatar)
+  end
+
   def serializable_hash(options = nil)
     options ||= {}
     super(options.reverse_merge(
-      only: [:id, :full_name, :phone_number, :email, :role, :date_of_birth, :gender, :avatar_url, :settings],
-      methods: [:age]
+      only: [ :id, :full_name, :phone_number, :email, :role, :date_of_birth, :gender, :settings ],
+      methods: [ :age, :avatar_url ]
     ))
   end
 end

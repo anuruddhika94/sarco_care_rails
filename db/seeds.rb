@@ -46,10 +46,6 @@ end
 
 puts "Seeding the 7-day meal plan..."
 
-# Content changes between days, not just additions, so replace wholesale
-# rather than find_or_create_by (which would skip updating existing rows).
-MealPlanDay.destroy_all
-
 meal_plan_data = [
   {
     day_number: 1, label_en: "Day 1", label_th: "วันที่ 1",
@@ -282,9 +278,12 @@ meal_plan_data = [
   }
 ]
 
+# Upserts in place rather than destroy-and-recreate: MealLog rows reference
+# meal_plan_meals/meal_plan_items by id, so wiping and rebuilding this content
+# would break real patients' logged history.
 meal_plan_data.each do |day_data|
-  day = MealPlanDay.create!(
-    day_number: day_data[:day_number],
+  day = MealPlanDay.find_or_initialize_by(day_number: day_data[:day_number])
+  day.update!(
     label_en: day_data[:label_en],
     label_th: day_data[:label_th],
     day_total_en: day_data[:day_total_en],
@@ -292,9 +291,8 @@ meal_plan_data.each do |day_data|
   )
 
   day_data[:meals].each_with_index do |meal_data, meal_position|
-    meal = MealPlanMeal.create!(
-      meal_plan_day: day,
-      slot: meal_data[:slot],
+    meal = MealPlanMeal.find_or_initialize_by(meal_plan_day: day, slot: meal_data[:slot])
+    meal.update!(
       title_en: meal_data[:title_en],
       title_th: meal_data[:title_th],
       icon: meal_data[:icon],
@@ -305,9 +303,8 @@ meal_plan_data.each do |day_data|
     )
 
     meal_data[:items].each_with_index do |item_data, item_position|
-      MealPlanItem.create!(
-        meal_plan_meal: meal,
-        name_en: item_data[:name_en],
+      item = MealPlanItem.find_or_initialize_by(meal_plan_meal: meal, name_en: item_data[:name_en])
+      item.update!(
         name_th: item_data[:name_th],
         protein_en: item_data[:protein_en],
         protein_th: item_data[:protein_th],
@@ -409,6 +406,14 @@ reminders_data.each do |data|
   end
 end
 
+puts "Seeding the admin account..."
+
+admin = AdminUser.find_or_create_by!(email: "admin@sarcocare.example") do |a|
+  a.full_name = "Admin"
+  a.password = "adminpass123"
+end
+
 puts "Done. Demo accounts (password: password123):"
 puts "  Patient:   #{somchai.phone_number} (#{somchai.full_name})"
 puts "  Caretaker: #{malee.phone_number} (#{malee.full_name})"
+puts "  Admin:     #{admin.email} / adminpass123 — /admin/login"

@@ -1,0 +1,11 @@
+<%= form_with url: admin_login_path, method: :post do |f| %>
+  <div class="field">
+    <label for="email">Email</label>
+    <input type="email" name="email" id="email" required autofocus>
+  </div>
+  <div class="field">
+    <label for="password">Password</label>
+    <input type="password" name="password" id="password" required>
+  </div>
+  <button type="submit" class="btn btn-primary" style="width:100%">Log in</button>
+<% end %>

@@ -1,0 +1,26 @@
+<p class="subtitle"><%= link_to "← #{@caretaker.full_name}", admin_caretaker_path(@caretaker) %></p>
+<h1>Edit caretaker</h1>
+
+<% if @caretaker.errors.any? %>
+  <div class="error-list">
+    <% @caretaker.errors.full_messages.each do |msg| %>
+      <div><%= msg %></div>
+    <% end %>
+  </div>
+<% end %>
+
+<%= form_with model: @caretaker, url: admin_caretaker_path(@caretaker), method: :patch do |f| %>
+  <div class="field">
+    <%= f.label :full_name %>
+    <%= f.text_field :full_name %>
+  </div>
+  <div class="field">
+    <%= f.label :phone_number %>
+    <%= f.text_field :phone_number %>
+  </div>
+  <div class="field">
+    <%= f.label :email %>
+    <%= f.email_field :email %>
+  </div>
+  <button type="submit" class="btn btn-primary">Save changes</button>
+<% end %>

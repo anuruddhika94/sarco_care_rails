@@ -41,6 +41,17 @@ module SarcoCareRails
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
 
+    # The mobile app's API is unaffected by these (it authenticates with a
+    # JWT, not cookies) — added back only so the server-rendered admin
+    # dashboard (app/controllers/admin/*, ActionController::Base) can use
+    # session-based login and CSRF protection. api_only mode sets the
+    # session store to :disabled, so that needs overriding explicitly too —
+    # the middleware alone isn't enough.
+    config.session_store :cookie_store, key: "_sarco_care_rails_session"
+    config.middleware.use ActionDispatch::Cookies
+    config.middleware.use config.session_store, config.session_options
+    config.middleware.use ActionDispatch::Flash
+
     # Tests are being skipped for now; don't scaffold spec/factory files.
     config.generators.test_framework = false
   end

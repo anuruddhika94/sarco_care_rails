@@ -1,0 +1,53 @@
+<h1>Dashboard</h1>
+<p class="subtitle">An overview of everyone using SarcoCare.</p>
+
+<div class="stat-grid">
+  <div class="stat-card">
+    <div class="value"><%= @patient_count %></div>
+    <div class="label">Patients</div>
+  </div>
+  <div class="stat-card">
+    <div class="value"><%= @caretaker_count %></div>
+    <div class="label">Caretakers</div>
+  </div>
+  <div class="stat-card">
+    <div class="value"><%= @pending_links_count %></div>
+    <div class="label">Pending care link requests</div>
+  </div>
+</div>
+
+<div class="section-title">Newest patients</div>
+<% if @recent_patients.any? %>
+  <table>
+    <thead><tr><th>Name</th><th>Phone</th><th>Joined</th></tr></thead>
+    <tbody>
+      <% @recent_patients.each do |p| %>
+        <tr>
+          <td><%= link_to p.full_name, admin_patient_path(p) %></td>
+          <td><%= p.phone_number %></td>
+          <td><%= p.created_at.strftime("%b %d, %Y") %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <p class="empty">No patients yet.</p>
+<% end %>
+
+<div class="section-title">Newest caretakers</div>
+<% if @recent_caretakers.any? %>
+  <table>
+    <thead><tr><th>Name</th><th>Phone</th><th>Joined</th></tr></thead>
+    <tbody>
+      <% @recent_caretakers.each do |c| %>
+        <tr>
+          <td><%= link_to c.full_name, admin_caretaker_path(c) %></td>
+          <td><%= c.phone_number %></td>
+          <td><%= c.created_at.strftime("%b %d, %Y") %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <p class="empty">No caretakers yet.</p>
+<% end %>

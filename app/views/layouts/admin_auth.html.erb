@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>SarcoCare Admin — Log in</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="csrf-param" content="<%= request_forgery_protection_token %>">
+    <meta name="csrf-token" content="<%= form_authenticity_token %>">
+    <style><%= render "layouts/admin_styles" %></style>
+  </head>
+  <body>
+    <div class="auth-page">
+      <div class="auth-card">
+        <h1>SarcoCare Admin</h1>
+        <p class="subtitle">Staff login</p>
+        <% if notice %><div class="flash notice"><%= notice %></div><% end %>
+        <% if alert %><div class="flash alert"><%= alert %></div><% end %>
+        <%= yield %>
+      </div>
+    </div>
+  </body>
+</html>

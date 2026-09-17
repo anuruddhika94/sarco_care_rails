@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>SarcoCare Admin</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="csrf-param" content="<%= request_forgery_protection_token %>">
+    <meta name="csrf-token" content="<%= form_authenticity_token %>">
+    <style><%= render "layouts/admin_styles" %></style>
+  </head>
+  <body>
+    <div class="admin-nav">
+      <div class="brand">SarcoCare <span class="dot">Admin</span></div>
+      <nav>
+        <%= link_to "Dashboard", admin_root_path, class: ("active" if controller_name == "dashboard") %>
+        <%= link_to "Patients", admin_patients_path, class: ("active" if controller_name == "patients") %>
+        <%= link_to "Caretakers", admin_caretakers_path, class: ("active" if controller_name == "caretakers") %>
+      </nav>
+      <div class="who">
+        <span><%= current_admin.full_name %></span>
+        <%= button_to "Log out", admin_logout_path, method: :delete, class: "btn btn-outline btn-sm", form: { style: "display:inline" } %>
+      </div>
+    </div>
+
+    <div class="container">
+      <% if notice %><div class="flash notice"><%= notice %></div><% end %>
+      <% if alert %><div class="flash alert"><%= alert %></div><% end %>
+      <%= yield %>
+    </div>
+  </body>
+</html>

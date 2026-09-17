@@ -1,0 +1,36 @@
+<p class="subtitle"><%= link_to "← All exercises", admin_exercises_path %></p>
+<h1>Edit exercise</h1>
+
+<% if @exercise.video_id.present? %>
+  <a href="https://www.youtube.com/watch?v=<%= @exercise.video_id %>" target="_blank" rel="noopener">
+    <img src="https://img.youtube.com/vi/<%= @exercise.video_id %>/mqdefault.jpg" style="border-radius:12px;max-width:280px;display:block;margin-bottom:20px">
+  </a>
+<% end %>
+
+<% if @exercise.errors.any? %>
+  <div class="error-list">
+    <% @exercise.errors.full_messages.each do |msg| %>
+      <div><%= msg %></div>
+    <% end %>
+  </div>
+<% end %>
+
+<%= form_with model: @exercise, url: admin_exercise_path(@exercise), method: :patch do |f| %>
+  <div class="field">
+    <%= f.label :name_en, "Name (English)" %>
+    <%= f.text_field :name_en %>
+  </div>
+  <div class="field">
+    <%= f.label :name_th, "Name (Thai)" %>
+    <%= f.text_field :name_th %>
+  </div>
+  <div class="field">
+    <%= f.label :default_minutes, "Duration (minutes)" %>
+    <%= f.number_field :default_minutes, min: 1 %>
+  </div>
+  <div class="field">
+    <%= f.label :icon %>
+    <%= f.select :icon, Admin::ExercisesController::ICON_OPTIONS, selected: @exercise.icon %>
+  </div>
+  <button type="submit" class="btn btn-primary">Save changes</button>
+<% end %>

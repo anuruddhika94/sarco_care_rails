@@ -11,6 +11,7 @@ Rails.application.routes.draw do
 
     resources :patients, only: [:index, :show, :edit, :update, :destroy]
     resources :caretakers, only: [:index, :show, :edit, :update, :destroy]
+    resources :exercises, only: [:index, :new, :create, :edit, :update, :destroy]
   end
 
   namespace :api do

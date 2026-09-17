@@ -1,0 +1,28 @@
+<p class="subtitle"><%= link_to "← All exercises", admin_exercises_path %></p>
+<h1>Add exercise from YouTube</h1>
+<p class="subtitle">Paste a video link — its name is taken from the video's real YouTube title.</p>
+
+<% if @exercise.errors.any? %>
+  <div class="error-list">
+    <% @exercise.errors.full_messages.each do |msg| %>
+      <div><%= msg %></div>
+    <% end %>
+  </div>
+<% end %>
+
+<%= form_with model: @exercise, url: admin_exercises_path, method: :post do |f| %>
+  <div class="field">
+    <label for="youtube_url">YouTube link</label>
+    <input type="text" name="youtube_url" id="youtube_url" value="<%= params[:youtube_url] %>"
+      placeholder="https://www.youtube.com/watch?v=…" required>
+  </div>
+  <div class="field">
+    <%= f.label :default_minutes, "Duration (minutes)" %>
+    <%= f.number_field :default_minutes, min: 1, value: @exercise.default_minutes || 10, required: true %>
+  </div>
+  <div class="field">
+    <%= f.label :icon %>
+    <%= f.select :icon, Admin::ExercisesController::ICON_OPTIONS, { selected: @exercise.icon || "fitness_center" } %>
+  </div>
+  <button type="submit" class="btn btn-primary"><%= admin_icon(:dumbbell, size: 16) %> Fetch title &amp; add</button>
+<% end %>

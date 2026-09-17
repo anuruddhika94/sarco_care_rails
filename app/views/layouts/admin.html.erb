@@ -23,6 +23,9 @@
         <%= link_to admin_caretakers_path, class: ("active" if controller_name == "caretakers") do %>
           <%= admin_icon(:people, size: 16) %> Caretakers
         <% end %>
+        <%= link_to admin_exercises_path, class: ("active" if controller_name == "exercises") do %>
+          <%= admin_icon(:dumbbell, size: 16) %> Exercises
+        <% end %>
       </nav>
       <div class="who">
         <%= avatar(current_admin.full_name, size: 32) %>

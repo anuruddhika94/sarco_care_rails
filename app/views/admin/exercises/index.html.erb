@@ -1,0 +1,45 @@
+<div class="meta-row" style="justify-content: space-between; margin-top: 0;">
+  <div>
+    <h1>Exercises</h1>
+    <p class="subtitle" style="margin-bottom: 0"><%= @exercises.size %> in the shared catalog every patient sees</p>
+  </div>
+  <%= link_to new_admin_exercise_path, class: "btn btn-primary" do %>
+    <%= admin_icon(:dumbbell, size: 16) %> Add from YouTube
+  <% end %>
+</div>
+<br>
+
+<% if @exercises.any? %>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Video</th><th>Name</th><th>Minutes</th><th></th></tr></thead>
+      <tbody>
+        <% @exercises.each do |e| %>
+          <tr>
+            <td>
+              <% if e.video_id.present? %>
+                <a href="https://www.youtube.com/watch?v=<%= e.video_id %>" target="_blank" rel="noopener">
+                  <img src="https://img.youtube.com/vi/<%= e.video_id %>/default.jpg" width="72" height="54" style="border-radius:8px;object-fit:cover;display:block">
+                </a>
+              <% else %>
+                <div class="icon-badge icon-badge-primary" style="width:54px;height:54px;"><%= admin_icon(:dumbbell) %></div>
+              <% end %>
+            </td>
+            <td>
+              <div style="font-weight:700"><%= e.name_en %></div>
+              <div style="color:var(--text-muted);font-size:13px"><%= e.name_th %></div>
+            </td>
+            <td><%= e.default_minutes %> min</td>
+            <td style="white-space:nowrap">
+              <%= link_to "Edit", edit_admin_exercise_path(e), class: "btn btn-outline btn-sm" %>
+              <%= button_to "Delete", admin_exercise_path(e), method: :delete, class: "btn btn-danger btn-sm",
+                    form: { onsubmit: "return confirm('Remove #{j e.name_en}? Patients will no longer see it.')", style: "display:inline" } %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% else %>
+  <p class="empty">No exercises yet — add one from a YouTube link.</p>
+<% end %>

@@ -1,5 +1,4 @@
 class Exercise < ApplicationRecord
-  has_many :patient_exercise_plans, dependent: :destroy
   has_many :exercise_logs, dependent: :destroy
 
   validates :key, presence: true, uniqueness: true

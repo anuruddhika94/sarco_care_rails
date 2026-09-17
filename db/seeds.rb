@@ -44,12 +44,16 @@ puts "Seeding care links..."
   end
 end
 
-puts "Seeding the 3-day meal plan..."
+puts "Seeding the 7-day meal plan..."
+
+# Content changes between days, not just additions, so replace wholesale
+# rather than find_or_create_by (which would skip updating existing rows).
+MealPlanDay.destroy_all
 
 meal_plan_data = [
   {
     day_number: 1, label_en: "Day 1", label_th: "วันที่ 1",
-    day_total_en: "~50 g/day", day_total_th: "~50 กรัม/วัน",
+    day_total_en: "~50–53 g/day", day_total_th: "~50–53 กรัม/วัน",
     meals: [
       { slot: :breakfast, title_en: "Minced pork congee + ½ boiled egg", title_th: "ข้าวต้มหมูสับ + ไข่ต้ม ½ ฟอง",
         icon: "rice_bowl", total_protein_en: "~13 g", total_protein_th: "~13 กรัม", image: "assets/images/meals/plan_d1_breakfast.jpg",
@@ -72,7 +76,7 @@ meal_plan_data = [
           { name_en: "Boiled vegetables · 1 cup", name_th: "ผักต้ม 1 ถ้วย", protein_en: "~1 g", protein_th: "~1 กรัม" },
           { name_en: "Rice · ½ bowl", name_th: "ข้าวสวย ½ ถ้วย", protein_en: "~2 g", protein_th: "~2 กรัม" }
         ] },
-      { slot: :before_bed, title_en: "Plain milk · 1 small glass (200 ml)", title_th: "นมจืด 1 แก้วเล็ก (200 มล.)",
+      { slot: :before_bed, title_en: "Plain milk · 1 glass", title_th: "นมจืด 1 แก้ว",
         icon: "local_drink_outlined", total_protein_en: "~7 g", total_protein_th: "~7 กรัม", image: nil,
         items: [
           { name_en: "Plain milk · 200 ml", name_th: "นมจืด 200 มล.", protein_en: "~7 g", protein_th: "~7 กรัม" }
@@ -81,100 +85,234 @@ meal_plan_data = [
   },
   {
     day_number: 2, label_en: "Day 2", label_th: "วันที่ 2",
-    day_total_en: "~50–52 g/day", day_total_th: "~50–52 กรัม/วัน",
+    day_total_en: "~50–54 g/day", day_total_th: "~50–54 กรัม/วัน",
     meals: [
-      { slot: :breakfast, title_en: "Fish congee + ½ boiled egg", title_th: "โจ๊กปลา + ไข่ต้ม ½ ฟอง",
-        icon: "rice_bowl", total_protein_en: "~14 g", total_protein_th: "~14 กรัม", image: "assets/images/meals/plan_d2_breakfast.jpg",
+      { slot: :breakfast, title_en: "Minced chicken congee + ½ boiled egg", title_th: "โจ๊กไก่สับ + ไข่ต้ม ½ ฟอง",
+        icon: "rice_bowl", total_protein_en: "~13 g", total_protein_th: "~13 กรัม", image: "assets/images/meals/plan_d2_breakfast.jpg",
         items: [
-          { name_en: "Fish · 40 g", name_th: "เนื้อปลา 40 กรัม", protein_en: "~9 g", protein_th: "~9 กรัม" },
           { name_en: "Rice porridge · 1 small bowl", name_th: "ข้าวโจ๊ก 1 ถ้วยเล็ก", protein_en: "~2 g", protein_th: "~2 กรัม" },
+          { name_en: "Minced chicken · 40 g", name_th: "ไก่สับ 40 กรัม", protein_en: "~8 g", protein_th: "~8 กรัม" },
           { name_en: "Boiled egg · ½", name_th: "ไข่ต้ม ½ ฟอง", protein_en: "~3 g", protein_th: "~3 กรัม" }
         ] },
-      { slot: :lunch, title_en: "Rice + ginger chicken + tofu", title_th: "ข้าว + ไก่ผัดขิง + เต้าหู้",
-        icon: "ramen_dining", total_protein_en: "~15–17 g", total_protein_th: "~15–17 กรัม", image: "assets/images/meals/plan_d2_lunch.jpg",
+      { slot: :lunch, title_en: "Rice + mild minced chicken basil + tofu", title_th: "ข้าว + ผัดกะเพราไก่สับ (ไม่เผ็ด) + เต้าหู้",
+        icon: "ramen_dining", total_protein_en: "~15 g", total_protein_th: "~15 กรัม", image: "assets/images/meals/plan_d2_lunch.jpg",
         items: [
-          { name_en: "Skinless chicken breast · 50 g", name_th: "อกไก่ไม่ติดหนัง 50 กรัม", protein_en: "~11 g", protein_th: "~11 กรัม" },
-          { name_en: "Soft tofu · ⅓–½ tube", name_th: "เต้าหู้อ่อน ⅓–½ หลอด", protein_en: "~2–4 g", protein_th: "~2–4 กรัม" },
+          { name_en: "Minced chicken (mild, no chili) · 50 g", name_th: "ไก่สับผัดกะเพราไม่เผ็ด 50 กรัม", protein_en: "~11 g", protein_th: "~11 กรัม" },
+          { name_en: "Tofu · ⅓ tube", name_th: "เต้าหู้ ⅓ หลอด", protein_en: "~2 g", protein_th: "~2 กรัม" },
           { name_en: "Rice · ½ bowl", name_th: "ข้าวสวย ½ ถ้วย", protein_en: "~2 g", protein_th: "~2 กรัม" }
         ] },
-      { slot: :dinner, title_en: "Egg, tofu & pork clear soup + rice", title_th: "แกงจืดไข่น้ำเต้าหู้หมูสับ + ข้าวสวย",
+      { slot: :dinner, title_en: "Ivy gourd, tofu & pork clear soup + rice", title_th: "แกงจืดตำลึงเต้าหู้หมูสับ + ข้าว",
         icon: "soup_kitchen", total_protein_en: "~16 g", total_protein_th: "~16 กรัม", image: "assets/images/meals/plan_d2_dinner.jpg",
         items: [
-          { name_en: "Egg · 1", name_th: "ไข่ 1 ฟอง", protein_en: "~6 g", protein_th: "~6 กรัม" },
-          { name_en: "Lean minced pork · 30 g", name_th: "หมูสับไม่ติดมัน 30 กรัม", protein_en: "~6 g", protein_th: "~6 กรัม" },
-          { name_en: "Tofu · ½ tube", name_th: "เต้าหู้ ½ หลอด", protein_en: "~2 g", protein_th: "~2 กรัม" },
+          { name_en: "Lean minced pork · 45 g", name_th: "หมูสับไม่ติดมัน 45 กรัม", protein_en: "~9 g", protein_th: "~9 กรัม" },
+          { name_en: "Tofu · ½ tube", name_th: "เต้าหู้ ½ หลอด", protein_en: "~4 g", protein_th: "~4 กรัม" },
+          { name_en: "Ivy gourd · ½ cup", name_th: "ตำลึง ½ ถ้วย", protein_en: "~1 g", protein_th: "~1 กรัม" },
           { name_en: "Rice · ½ bowl", name_th: "ข้าวสวย ½ ถ้วย", protein_en: "~2 g", protein_th: "~2 กรัม" }
         ] },
-      { slot: :snack, title_en: "Plain yogurt · 1 small cup", title_th: "โยเกิร์ตรสธรรมชาติ 1 ถ้วยเล็ก",
-        icon: "icecream", total_protein_en: "~4–5 g", total_protein_th: "~4–5 กรัม", image: nil,
+      { slot: :snack, title_en: "Plain yogurt · 1 cup", title_th: "โยเกิร์ตรสธรรมชาติ 1 ถ้วย",
+        icon: "icecream", total_protein_en: "~7 g", total_protein_th: "~7 กรัม", image: nil,
         items: [
-          { name_en: "Plain yogurt · 1 small cup", name_th: "โยเกิร์ตรสธรรมชาติ 1 ถ้วยเล็ก", protein_en: "~4–5 g", protein_th: "~4–5 กรัม" }
+          { name_en: "Plain yogurt · 1 cup", name_th: "โยเกิร์ตรสธรรมชาติ 1 ถ้วย", protein_en: "~7 g", protein_th: "~7 กรัม" }
         ] }
     ]
   },
   {
     day_number: 3, label_en: "Day 3", label_th: "วันที่ 3",
-    day_total_en: "~50–53 g/day", day_total_th: "~50–53 กรัม/วัน",
+    day_total_en: "~51–55 g/day", day_total_th: "~51–55 กรัม/วัน",
     meals: [
-      { slot: :breakfast, title_en: "Fish congee + boiled egg + spinach", title_th: "ข้าวต้มปลา + ไข่ต้ม + ผักโขม",
-        icon: "rice_bowl", total_protein_en: "~15 g", total_protein_th: "~15 กรัม", image: "assets/images/meals/plan_d3_breakfast.jpg",
+      { slot: :breakfast, title_en: "Fish congee + steamed egg", title_th: "ข้าวต้มปลา + ไข่ตุ๋น",
+        icon: "rice_bowl", total_protein_en: "~14 g", total_protein_th: "~14 กรัม", image: "assets/images/meals/plan_d3_breakfast.jpg",
         items: [
-          { name_en: "Fish · 40 g", name_th: "เนื้อปลา 40 กรัม", protein_en: "~9 g", protein_th: "~9 กรัม" },
+          { name_en: "Fish · 40 g", name_th: "เนื้อปลา 40 กรัม", protein_en: "~8 g", protein_th: "~8 กรัม" },
           { name_en: "Rice congee · 1 small bowl", name_th: "ข้าวต้ม 1 ถ้วยเล็ก", protein_en: "~2 g", protein_th: "~2 กรัม" },
-          { name_en: "Boiled egg · ½", name_th: "ไข่ต้ม ½ ฟอง", protein_en: "~3 g", protein_th: "~3 กรัม" },
-          { name_en: "Spinach · ½ cup", name_th: "ผักโขม ½ ถ้วย", protein_en: "~1 g", protein_th: "~1 กรัม" }
+          { name_en: "Steamed egg", name_th: "ไข่ตุ๋น", protein_en: "~4 g", protein_th: "~4 กรัม" }
         ] },
-      { slot: :lunch, title_en: "Steamed egg with shrimp + veg + rice", title_th: "ไข่ตุ๋นกุ้ง + ผักลวก + ข้าวสวย",
-        icon: "egg_alt", total_protein_en: "~15–17 g", total_protein_th: "~15–17 กรัม", image: "assets/images/meals/plan_d3_lunch.jpg",
+      { slot: :lunch, title_en: "Rice + soft ginger chicken + blanched veg", title_th: "ข้าว + ไก่ผัดขิง (แบบนุ่ม) + ผักลวก",
+        icon: "egg_alt", total_protein_en: "~16 g", total_protein_th: "~16 กรัม", image: "assets/images/meals/plan_d3_lunch.jpg",
         items: [
-          { name_en: "Egg · 1", name_th: "ไข่ 1 ฟอง", protein_en: "~6 g", protein_th: "~6 กรัม" },
-          { name_en: "Minced shrimp · 40 g", name_th: "กุ้งสับ 40 กรัม", protein_en: "~8 g", protein_th: "~8 กรัม" },
+          { name_en: "Soft-cooked chicken breast · 55 g", name_th: "อกไก่ผัดขิงเนื้อนุ่ม 55 กรัม", protein_en: "~13 g", protein_th: "~13 กรัม" },
           { name_en: "Blanched vegetables · 1 cup", name_th: "ผักลวก 1 ถ้วย", protein_en: "~1 g", protein_th: "~1 กรัม" },
           { name_en: "Rice · ½ bowl", name_th: "ข้าวสวย ½ ถ้วย", protein_en: "~2 g", protein_th: "~2 กรัม" }
         ] },
-      { slot: :dinner, title_en: "Grilled/steamed fish + veg soup + rice", title_th: "ปลาย่าง/นึ่ง + ซุปผัก + ข้าวสวย",
+      { slot: :dinner, title_en: "Steamed soy fish + napa cabbage & tofu soup", title_th: "ปลานึ่งซีอิ๊ว + แกงจืดผักกาดขาวเต้าหู้",
         icon: "set_meal", total_protein_en: "~16 g", total_protein_th: "~16 กรัม", image: "assets/images/meals/plan_d3_dinner.jpg",
         items: [
-          { name_en: "Fish · 60 g", name_th: "เนื้อปลา 60 กรัม", protein_en: "~13 g", protein_th: "~13 กรัม" },
-          { name_en: "Vegetables · 1 cup", name_th: "ผักต้ม 1 ถ้วย", protein_en: "~1 g", protein_th: "~1 กรัม" },
+          { name_en: "Fish · 50 g", name_th: "เนื้อปลา 50 กรัม", protein_en: "~10 g", protein_th: "~10 กรัม" },
+          { name_en: "Napa cabbage & tofu · ½ tube", name_th: "ผักกาดขาวและเต้าหู้ ½ หลอด", protein_en: "~4 g", protein_th: "~4 กรัม" },
           { name_en: "Rice · ½ bowl", name_th: "ข้าวสวย ½ ถ้วย", protein_en: "~2 g", protein_th: "~2 กรัม" }
         ] },
-      { slot: :snack, title_en: "Plain milk (200 ml) + ½ boiled egg", title_th: "นมจืด 1 แก้วเล็ก (200 มล.) + ไข่ต้ม ½ ฟอง",
-        icon: "local_drink_outlined", total_protein_en: "~10 g", total_protein_th: "~10 กรัม", image: nil,
+      { slot: :before_bed, title_en: "Plain milk · 1 glass", title_th: "นมจืด 1 แก้ว",
+        icon: "local_drink_outlined", total_protein_en: "~7 g", total_protein_th: "~7 กรัม", image: nil,
         items: [
-          { name_en: "Plain milk · 200 ml", name_th: "นมจืด 200 มล.", protein_en: "~7 g", protein_th: "~7 กรัม" },
+          { name_en: "Plain milk · 200 ml", name_th: "นมจืด 200 มล.", protein_en: "~7 g", protein_th: "~7 กรัม" }
+        ] }
+    ]
+  },
+  {
+    day_number: 4, label_en: "Day 4", label_th: "วันที่ 4",
+    day_total_en: "~50–53 g/day", day_total_th: "~50–53 กรัม/วัน",
+    meals: [
+      { slot: :breakfast, title_en: "Minced pork congee + steamed egg", title_th: "โจ๊กหมูสับ + ไข่ตุ๋น",
+        icon: "rice_bowl", total_protein_en: "~13 g", total_protein_th: "~13 กรัม", image: "assets/images/meals/plan_d4_breakfast.jpg",
+        items: [
+          { name_en: "Lean minced pork · 35 g", name_th: "หมูสับไม่ติดมัน 35 กรัม", protein_en: "~7 g", protein_th: "~7 กรัม" },
+          { name_en: "Rice porridge · 1 small bowl", name_th: "ข้าวโจ๊ก 1 ถ้วยเล็ก", protein_en: "~2 g", protein_th: "~2 กรัม" },
+          { name_en: "Steamed egg", name_th: "ไข่ตุ๋น", protein_en: "~4 g", protein_th: "~4 กรัม" }
+        ] },
+      { slot: :lunch, title_en: "Rice + topped tofu with minced pork + boiled veg", title_th: "ข้าว + เต้าหู้ทรงเครื่องหมูสับ + ผักต้ม",
+        icon: "ramen_dining", total_protein_en: "~16 g", total_protein_th: "~16 กรัม", image: "assets/images/meals/plan_d4_lunch.jpg",
+        items: [
+          { name_en: "Tofu · ½ tube", name_th: "เต้าหู้ ½ หลอด", protein_en: "~4 g", protein_th: "~4 กรัม" },
+          { name_en: "Lean minced pork topping · 45 g", name_th: "หมูสับหน้าเต้าหู้ 45 กรัม", protein_en: "~9 g", protein_th: "~9 กรัม" },
+          { name_en: "Boiled vegetables · 1 cup", name_th: "ผักต้ม 1 ถ้วย", protein_en: "~1 g", protein_th: "~1 กรัม" },
+          { name_en: "Rice · ½ bowl", name_th: "ข้าวสวย ½ ถ้วย", protein_en: "~2 g", protein_th: "~2 กรัม" }
+        ] },
+      { slot: :dinner, title_en: "Soft fish & vegetable soup + rice", title_th: "แกงเลียงปลาแบบเนื้อนิ่ม + ข้าว",
+        icon: "soup_kitchen", total_protein_en: "~16 g", total_protein_th: "~16 กรัม", image: "assets/images/meals/plan_d4_dinner.jpg",
+        items: [
+          { name_en: "Fish · 55 g", name_th: "เนื้อปลา 55 กรัม", protein_en: "~12 g", protein_th: "~12 กรัม" },
+          { name_en: "Mixed vegetables · 1 cup", name_th: "ผักรวม 1 ถ้วย", protein_en: "~2 g", protein_th: "~2 กรัม" },
+          { name_en: "Rice · ½ bowl", name_th: "ข้าวสวย ½ ถ้วย", protein_en: "~2 g", protein_th: "~2 กรัม" }
+        ] },
+      { slot: :before_bed, title_en: "Unsweetened soy milk · 1 glass", title_th: "นมถั่วเหลืองไม่หวาน 1 แก้ว",
+        icon: "local_drink_outlined", total_protein_en: "~7 g", total_protein_th: "~7 กรัม", image: nil,
+        items: [
+          { name_en: "Unsweetened soy milk · 200 ml", name_th: "นมถั่วเหลืองไม่หวาน 200 มล.", protein_en: "~7 g", protein_th: "~7 กรัม" }
+        ] }
+    ]
+  },
+  {
+    day_number: 5, label_en: "Day 5", label_th: "วันที่ 5",
+    day_total_en: "~50–54 g/day", day_total_th: "~50–54 กรัม/วัน",
+    meals: [
+      { slot: :breakfast, title_en: "Shredded chicken congee + ½ boiled egg", title_th: "ข้าวต้มไก่ฉีก + ไข่ต้ม ½ ฟอง",
+        icon: "rice_bowl", total_protein_en: "~13 g", total_protein_th: "~13 กรัม", image: "assets/images/meals/plan_d5_breakfast.jpg",
+        items: [
+          { name_en: "Shredded chicken · 40 g", name_th: "ไก่ฉีก 40 กรัม", protein_en: "~8 g", protein_th: "~8 กรัม" },
+          { name_en: "Rice congee · 1 small bowl", name_th: "ข้าวต้ม 1 ถ้วยเล็ก", protein_en: "~2 g", protein_th: "~2 กรัม" },
           { name_en: "Boiled egg · ½", name_th: "ไข่ต้ม ½ ฟอง", protein_en: "~3 g", protein_th: "~3 กรัม" }
+        ] },
+      { slot: :lunch, title_en: "Rice + ginger fish + tofu clear soup", title_th: "ข้าว + ปลาผัดขิง + แกงจืดเต้าหู้",
+        icon: "set_meal", total_protein_en: "~16 g", total_protein_th: "~16 กรัม", image: "assets/images/meals/plan_d5_lunch.jpg",
+        items: [
+          { name_en: "Fish stir-fried with ginger · 50 g", name_th: "ปลาผัดขิง 50 กรัม", protein_en: "~11 g", protein_th: "~11 กรัม" },
+          { name_en: "Tofu · ½ tube", name_th: "เต้าหู้ ½ หลอด", protein_en: "~3 g", protein_th: "~3 กรัม" },
+          { name_en: "Rice · ½ bowl", name_th: "ข้าวสวย ½ ถ้วย", protein_en: "~2 g", protein_th: "~2 กรัม" }
+        ] },
+      { slot: :dinner, title_en: "Clear fish tom yum + boiled veg + rice", title_th: "ต้มยำปลาแบบน้ำใส + ผักต้ม + ข้าว",
+        icon: "soup_kitchen", total_protein_en: "~15 g", total_protein_th: "~15 กรัม", image: "assets/images/meals/plan_d5_dinner.jpg",
+        items: [
+          { name_en: "Fish · 55 g", name_th: "เนื้อปลา 55 กรัม", protein_en: "~12 g", protein_th: "~12 กรัม" },
+          { name_en: "Boiled vegetables · 1 cup", name_th: "ผักต้ม 1 ถ้วย", protein_en: "~1 g", protein_th: "~1 กรัม" },
+          { name_en: "Rice · ½ bowl", name_th: "ข้าวสวย ½ ถ้วย", protein_en: "~2 g", protein_th: "~2 กรัม" }
+        ] },
+      { slot: :snack, title_en: "Plain yogurt", title_th: "โยเกิร์ตรสธรรมชาติ",
+        icon: "icecream", total_protein_en: "~6–7 g", total_protein_th: "~6–7 กรัม", image: nil,
+        items: [
+          { name_en: "Plain yogurt · 1 small cup", name_th: "โยเกิร์ตรสธรรมชาติ 1 ถ้วยเล็ก", protein_en: "~6–7 g", protein_th: "~6–7 กรัม" }
+        ] }
+    ]
+  },
+  {
+    day_number: 6, label_en: "Day 6", label_th: "วันที่ 6",
+    day_total_en: "~51–54 g/day", day_total_th: "~51–54 กรัม/วัน",
+    meals: [
+      { slot: :breakfast, title_en: "Fish congee + steamed egg", title_th: "โจ๊กปลา + ไข่ตุ๋น",
+        icon: "rice_bowl", total_protein_en: "~14 g", total_protein_th: "~14 กรัม", image: "assets/images/meals/plan_d6_breakfast.jpg",
+        items: [
+          { name_en: "Fish · 40 g", name_th: "เนื้อปลา 40 กรัม", protein_en: "~8 g", protein_th: "~8 กรัม" },
+          { name_en: "Rice porridge · 1 small bowl", name_th: "ข้าวโจ๊ก 1 ถ้วยเล็ก", protein_en: "~2 g", protein_th: "~2 กรัม" },
+          { name_en: "Steamed egg", name_th: "ไข่ตุ๋น", protein_en: "~4 g", protein_th: "~4 กรัม" }
+        ] },
+      { slot: :lunch, title_en: "Rice + chicken stewed with shiitake + steamed veg", title_th: "ข้าว + ไก่ตุ๋นเห็ดหอม + ผักนึ่ง",
+        icon: "ramen_dining", total_protein_en: "~17 g", total_protein_th: "~17 กรัม", image: "assets/images/meals/plan_d6_lunch.jpg",
+        items: [
+          { name_en: "Chicken stewed with shiitake · 60 g", name_th: "ไก่ตุ๋นเห็ดหอม 60 กรัม", protein_en: "~13 g", protein_th: "~13 กรัม" },
+          { name_en: "Shiitake mushroom", name_th: "เห็ดหอม", protein_en: "~1 g", protein_th: "~1 กรัม" },
+          { name_en: "Steamed vegetables · 1 cup", name_th: "ผักนึ่ง 1 ถ้วย", protein_en: "~1 g", protein_th: "~1 กรัม" },
+          { name_en: "Rice · ½ bowl", name_th: "ข้าวสวย ½ ถ้วย", protein_en: "~2 g", protein_th: "~2 กรัม" }
+        ] },
+      { slot: :dinner, title_en: "Glass noodle, tofu & pork clear soup + rice", title_th: "แกงจืดวุ้นเส้นเต้าหู้หมูสับ + ข้าว",
+        icon: "soup_kitchen", total_protein_en: "~15 g", total_protein_th: "~15 กรัม", image: "assets/images/meals/plan_d6_dinner.jpg",
+        items: [
+          { name_en: "Lean minced pork · 40 g", name_th: "หมูสับไม่ติดมัน 40 กรัม", protein_en: "~8 g", protein_th: "~8 กรัม" },
+          { name_en: "Tofu · ½ tube", name_th: "เต้าหู้ ½ หลอด", protein_en: "~4 g", protein_th: "~4 กรัม" },
+          { name_en: "Glass noodles", name_th: "วุ้นเส้น", protein_en: "~1 g", protein_th: "~1 กรัม" },
+          { name_en: "Rice · ½ bowl", name_th: "ข้าวสวย ½ ถ้วย", protein_en: "~2 g", protein_th: "~2 กรัม" }
+        ] },
+      { slot: :before_bed, title_en: "Plain milk · 1 glass", title_th: "นมจืด 1 แก้ว",
+        icon: "local_drink_outlined", total_protein_en: "~7 g", total_protein_th: "~7 กรัม", image: nil,
+        items: [
+          { name_en: "Plain milk · 200 ml", name_th: "นมจืด 200 มล.", protein_en: "~7 g", protein_th: "~7 กรัม" }
+        ] }
+    ]
+  },
+  {
+    day_number: 7, label_en: "Day 7", label_th: "วันที่ 7",
+    day_total_en: "~50–55 g/day", day_total_th: "~50–55 กรัม/วัน",
+    meals: [
+      { slot: :breakfast, title_en: "Minced pork congee + ½ boiled egg", title_th: "ข้าวต้มหมูสับ + ไข่ต้ม ½ ฟอง",
+        icon: "rice_bowl", total_protein_en: "~13 g", total_protein_th: "~13 กรัม", image: "assets/images/meals/plan_d7_breakfast.jpg",
+        items: [
+          { name_en: "Rice congee · 1 small bowl", name_th: "ข้าวต้ม 1 ถ้วยเล็ก", protein_en: "~2 g", protein_th: "~2 กรัม" },
+          { name_en: "Lean minced pork · 40 g", name_th: "หมูสับไม่ติดมัน 40 กรัม", protein_en: "~8 g", protein_th: "~8 กรัม" },
+          { name_en: "Boiled egg · ½", name_th: "ไข่ต้ม ½ ฟอง", protein_en: "~3 g", protein_th: "~3 กรัม" }
+        ] },
+      { slot: :lunch, title_en: "Rice + steamed soy fish + soft tofu", title_th: "ข้าว + ปลานึ่งซีอิ๊ว + เต้าหู้อ่อน",
+        icon: "set_meal", total_protein_en: "~17 g", total_protein_th: "~17 กรัม", image: "assets/images/meals/plan_d7_lunch.jpg",
+        items: [
+          { name_en: "Fish · 55 g", name_th: "เนื้อปลา 55 กรัม", protein_en: "~12 g", protein_th: "~12 กรัม" },
+          { name_en: "Soft tofu · ½ tube", name_th: "เต้าหู้อ่อน ½ หลอด", protein_en: "~3 g", protein_th: "~3 กรัม" },
+          { name_en: "Rice · ½ bowl", name_th: "ข้าวสวย ½ ถ้วย", protein_en: "~2 g", protein_th: "~2 กรัม" }
+        ] },
+      { slot: :dinner, title_en: "Minced chicken & veg clear soup + steamed veg + rice", title_th: "แกงจืดไก่สับผัก + ผักนึ่ง + ข้าว",
+        icon: "soup_kitchen", total_protein_en: "~15 g", total_protein_th: "~15 กรัม", image: "assets/images/meals/plan_d7_dinner.jpg",
+        items: [
+          { name_en: "Minced chicken · 55 g", name_th: "ไก่สับ 55 กรัม", protein_en: "~11 g", protein_th: "~11 กรัม" },
+          { name_en: "Vegetables in soup · 1 cup", name_th: "ผักในแกงจืด 1 ถ้วย", protein_en: "~1 g", protein_th: "~1 กรัม" },
+          { name_en: "Steamed vegetables · 1 cup", name_th: "ผักนึ่ง 1 ถ้วย", protein_en: "~1 g", protein_th: "~1 กรัม" },
+          { name_en: "Rice · ½ bowl", name_th: "ข้าวสวย ½ ถ้วย", protein_en: "~2 g", protein_th: "~2 กรัม" }
+        ] },
+      { slot: :before_bed, title_en: "Plain milk or yogurt · 1 cup", title_th: "นมจืด/โยเกิร์ต 1 ถ้วย",
+        icon: "local_drink_outlined", total_protein_en: "~7–8 g", total_protein_th: "~7–8 กรัม", image: nil,
+        items: [
+          { name_en: "Plain milk or yogurt · 1 cup", name_th: "นมจืด/โยเกิร์ต 1 ถ้วย", protein_en: "~7–8 g", protein_th: "~7–8 กรัม" }
         ] }
     ]
   }
 ]
 
 meal_plan_data.each do |day_data|
-  day = MealPlanDay.find_or_create_by!(day_number: day_data[:day_number]) do |d|
-    d.label_en = day_data[:label_en]
-    d.label_th = day_data[:label_th]
-    d.day_total_en = day_data[:day_total_en]
-    d.day_total_th = day_data[:day_total_th]
-  end
+  day = MealPlanDay.create!(
+    day_number: day_data[:day_number],
+    label_en: day_data[:label_en],
+    label_th: day_data[:label_th],
+    day_total_en: day_data[:day_total_en],
+    day_total_th: day_data[:day_total_th]
+  )
 
   day_data[:meals].each_with_index do |meal_data, meal_position|
-    meal = MealPlanMeal.find_or_create_by!(meal_plan_day: day, slot: meal_data[:slot]) do |m|
-      m.title_en = meal_data[:title_en]
-      m.title_th = meal_data[:title_th]
-      m.icon = meal_data[:icon]
-      m.total_protein_en = meal_data[:total_protein_en]
-      m.total_protein_th = meal_data[:total_protein_th]
-      m.image = meal_data[:image]
-      m.position = meal_position
-    end
+    meal = MealPlanMeal.create!(
+      meal_plan_day: day,
+      slot: meal_data[:slot],
+      title_en: meal_data[:title_en],
+      title_th: meal_data[:title_th],
+      icon: meal_data[:icon],
+      total_protein_en: meal_data[:total_protein_en],
+      total_protein_th: meal_data[:total_protein_th],
+      image: meal_data[:image],
+      position: meal_position
+    )
 
     meal_data[:items].each_with_index do |item_data, item_position|
-      MealPlanItem.find_or_create_by!(meal_plan_meal: meal, name_en: item_data[:name_en]) do |i|
-        i.name_th = item_data[:name_th]
-        i.protein_en = item_data[:protein_en]
-        i.protein_th = item_data[:protein_th]
-        i.position = item_position
-      end
+      MealPlanItem.create!(
+        meal_plan_meal: meal,
+        name_en: item_data[:name_en],
+        name_th: item_data[:name_th],
+        protein_en: item_data[:protein_en],
+        protein_th: item_data[:protein_th],
+        position: item_position
+      )
     end
   end
 end
@@ -183,13 +321,11 @@ puts "Seeding exercises..."
 
 exercises_data = [
   { key: "seated_leg_lift", name_en: "Seated Leg Lift", name_th: "ยกขาท่านั่ง", video_id: "BoA431kaU2M",
-    icon: "airline_seat_recline_normal", default_minutes: 10, day_number: 1 },
+    icon: "airline_seat_recline_normal", default_minutes: 10 },
   { key: "arm_curls", name_en: "Arm Curls", name_th: "งอแขนยกน้ำหนัก", video_id: "eZhhNN4QkSk",
-    icon: "fitness_center", default_minutes: 8, day_number: 2 },
+    icon: "fitness_center", default_minutes: 8 },
   { key: "chair_squats", name_en: "Chair Squats", name_th: "สควอทกับเก้าอี้", video_id: "7QZKb9E5dbg",
-    icon: "chair_alt", default_minutes: 12, day_number: 3 },
-  { key: "standing_balance", name_en: "Standing Balance", name_th: "ทรงตัวท่ายืน", video_id: "",
-    icon: "accessibility_new", default_minutes: 6, day_number: 4 }
+    icon: "chair_alt", default_minutes: 12 }
 ]
 
 instructions = [
@@ -199,7 +335,9 @@ instructions = [
   { en: "Follow the clear step-by-step video", th: "ทำตามวิดีโอทีละขั้นตอน" }
 ]
 
-exercises = exercises_data.map do |data|
+# The exercise catalog is shared across all patients — no per-patient
+# assignment needed.
+exercises_data.each do |data|
   Exercise.find_or_create_by!(key: data[:key]) do |e|
     e.name_en = data[:name_en]
     e.name_th = data[:name_th]
@@ -207,19 +345,6 @@ exercises = exercises_data.map do |data|
     e.icon = data[:icon]
     e.default_minutes = data[:default_minutes]
     e.instructions = instructions
-  end
-end
-
-# Somchai's plan: the first 3 are recommended; 1 and 3 are in "My Plan"
-# (mirrors ExercisePlanScreen's _allExercises / _myPlan mocks).
-exercises_data.zip(exercises).each_with_index do |(data, exercise), index|
-  next if index == 3 # standing_balance isn't in the recommended set either
-
-  PatientExercisePlan.find_or_create_by!(patient: somchai, exercise: exercise) do |p|
-    p.day_number = data[:day_number]
-    p.minutes = data[:default_minutes]
-    p.in_my_plan = [0, 2].include?(index)
-    p.position = index
   end
 end
 

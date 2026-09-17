@@ -10,15 +10,17 @@ Rails.application.routes.draw do
 
       resource :me, only: [:show, :update], controller: :me
 
-      resources :care_links, only: [:index, :create, :update]
+      resources :care_links, only: [:index, :create, :update] do
+        collection { get :lookup }
+      end
 
       resources :health_readings, only: [:index, :create]
       resources :assessments, only: [:index, :create]
 
       resource :meal_plan, only: [:show], controller: :meal_plans
+      resources :meal_logs, only: [:index, :create]
 
       resources :exercises, only: [:index]
-      resources :exercise_plans, only: [:index, :create, :update]
       resources :exercise_logs, only: [:index, :create]
 
       resources :articles, only: [:index, :show]

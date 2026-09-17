@@ -10,6 +10,20 @@ module Api
         render json: links.includes(:patient, :caretaker).order(created_at: :desc)
       end
 
+      # Caretaker-only: look up a patient by phone number without sending a
+      # request yet, so AddPatientScreen can show who they'd be linking to
+      # before confirming.
+      def lookup
+        unless current_user.caretaker?
+          return render json: { error: "Only caretakers can look up patients" }, status: :forbidden
+        end
+
+        patient = User.patient.find_by(phone_number: params[:phone_number])
+        return render json: { error: "No patient found with that phone number" }, status: :not_found unless patient
+
+        render json: patient
+      end
+
       # Caretaker-only: search for a patient by phone number and send a link
       # request (mirrors AddPatientScreen).
       def create

@@ -1,21 +1,21 @@
 module Api
   module V1
-    class ExerciseLogsController < ApplicationController
+    class MealLogsController < ApplicationController
       include PatientScoped
 
       def index
         patient = acting_patient
         return unless patient
 
-        render json: patient.exercise_logs.includes(:exercise).order(completed_on: :desc)
+        render json: patient.meal_logs.includes(meal_plan_meal: :meal_plan_items).order(eaten_on: :desc)
       end
 
       def create
         patient = acting_patient
         return unless patient
 
-        log = patient.exercise_logs.new(exercise_log_params)
-        log.completed_on ||= Date.current
+        log = patient.meal_logs.new(meal_log_params)
+        log.eaten_on ||= Date.current
         if log.save
           render json: log, status: :created
         else
@@ -25,8 +25,8 @@ module Api
 
       private
 
-      def exercise_log_params
-        params.permit(:exercise_id, :completed_on, :minutes)
+      def meal_log_params
+        params.permit(:meal_plan_meal_id, :eaten_on)
       end
     end
   end

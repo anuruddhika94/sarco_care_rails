@@ -7,18 +7,20 @@ module Api
         patient = acting_patient
         return unless patient
 
-        readings = patient.health_readings.order(recorded_on: :desc)
-        readings = readings.where(recorded_on: range_start(params[:range])..Date.current) if params[:range].present?
-        render json: readings
+        render json: patient.health_readings.order(recorded_on: :desc)
       end
 
+      # One reading per date: posting again for a date that already has a
+      # reading updates it instead of creating a duplicate.
       def create
         patient = acting_patient
         return unless patient
 
-        reading = patient.health_readings.new(health_reading_params)
+        reading = patient.health_readings.find_or_initialize_by(recorded_on: params[:recorded_on])
+        was_new = reading.new_record?
+        reading.assign_attributes(health_reading_params.except(:recorded_on))
         if reading.save
-          render json: reading, status: :created
+          render json: reading, status: was_new ? :created : :ok
         else
           render json: { error: "Validation failed", errors: reading.errors }, status: :unprocessable_entity
         end
@@ -28,14 +30,6 @@ module Api
 
       def health_reading_params
         params.permit(:recorded_on, :weight_kg, :height_cm, :calf_cm)
-      end
-
-      def range_start(range)
-        case range
-        when "weekly" then 7.days.ago.to_date
-        when "monthly" then 30.days.ago.to_date
-        else Date.current
-        end
       end
     end
   end

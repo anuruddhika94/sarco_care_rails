@@ -14,11 +14,16 @@ module Api
 
       def login
         user = User.find_by(phone_number: params[:phone_number])
-        if user&.authenticate(params[:password])
-          render json: { token: token_for(user), user: user }
-        else
-          render json: { error: "Invalid phone number or password" }, status: :unauthorized
+        unless user&.authenticate(params[:password])
+          return render json: { error: "Invalid phone number or password" }, status: :unauthorized
         end
+
+        if params[:role].present? && user.role != params[:role]
+          return render json: { error: "This phone number is registered as a #{user.role}, not a #{params[:role]}" },
+                        status: :unauthorized
+        end
+
+        render json: { token: token_for(user), user: user }
       end
 
       private

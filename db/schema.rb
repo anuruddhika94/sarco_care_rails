@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_17_075547) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_17_104532) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -97,8 +97,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_17_075547) do
     t.date "recorded_on", null: false
     t.datetime "updated_at", null: false
     t.decimal "weight_kg", precision: 5, scale: 2
-    t.index ["patient_id", "recorded_on"], name: "index_health_readings_on_patient_id_and_recorded_on"
+    t.index ["patient_id", "recorded_on"], name: "index_health_readings_on_patient_id_and_recorded_on", unique: true
     t.index ["patient_id"], name: "index_health_readings_on_patient_id"
+  end
+
+  create_table "meal_logs", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.date "eaten_on", null: false
+    t.bigint "meal_plan_meal_id", null: false
+    t.bigint "patient_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["meal_plan_meal_id"], name: "index_meal_logs_on_meal_plan_meal_id"
+    t.index ["patient_id", "eaten_on"], name: "index_meal_logs_on_patient_id_and_eaten_on"
+    t.index ["patient_id"], name: "index_meal_logs_on_patient_id"
   end
 
   create_table "meal_plan_days", force: :cascade do |t|
@@ -139,20 +150,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_17_075547) do
     t.index ["meal_plan_day_id"], name: "index_meal_plan_meals_on_meal_plan_day_id"
   end
 
-  create_table "patient_exercise_plans", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.integer "day_number", null: false
-    t.bigint "exercise_id", null: false
-    t.boolean "in_my_plan", default: false, null: false
-    t.integer "minutes", null: false
-    t.bigint "patient_id", null: false
-    t.integer "position", default: 0, null: false
-    t.datetime "updated_at", null: false
-    t.index ["exercise_id"], name: "index_patient_exercise_plans_on_exercise_id"
-    t.index ["patient_id", "exercise_id"], name: "index_patient_exercise_plans_on_patient_id_and_exercise_id", unique: true
-    t.index ["patient_id"], name: "index_patient_exercise_plans_on_patient_id"
-  end
-
   create_table "reminders", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.boolean "enabled", default: true, null: false
@@ -186,9 +183,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_17_075547) do
   add_foreign_key "exercise_logs", "exercises"
   add_foreign_key "exercise_logs", "users", column: "patient_id"
   add_foreign_key "health_readings", "users", column: "patient_id"
+  add_foreign_key "meal_logs", "meal_plan_meals"
+  add_foreign_key "meal_logs", "users", column: "patient_id"
   add_foreign_key "meal_plan_items", "meal_plan_meals"
   add_foreign_key "meal_plan_meals", "meal_plan_days"
-  add_foreign_key "patient_exercise_plans", "exercises"
-  add_foreign_key "patient_exercise_plans", "users", column: "patient_id"
   add_foreign_key "reminders", "users", column: "patient_id"
 end

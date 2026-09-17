@@ -16,14 +16,39 @@ class User < ApplicationRecord
 
   has_many :health_readings, foreign_key: :patient_id, dependent: :destroy, inverse_of: :patient
   has_many :assessments, foreign_key: :patient_id, dependent: :destroy, inverse_of: :patient
-  has_many :patient_exercise_plans, foreign_key: :patient_id, dependent: :destroy, inverse_of: :patient
   has_many :exercise_logs, foreign_key: :patient_id, dependent: :destroy, inverse_of: :patient
+  has_many :meal_logs, foreign_key: :patient_id, dependent: :destroy, inverse_of: :patient
   has_many :reminders, foreign_key: :patient_id, dependent: :destroy, inverse_of: :patient
   has_many :daily_goal_completions, foreign_key: :patient_id, dependent: :destroy, inverse_of: :patient
 
   validates :full_name, presence: true
   validates :phone_number, presence: true, uniqueness: true
   validates :password, length: { minimum: 8 }, allow_nil: true
+
+  after_create :assign_default_reminders, if: :patient?
+
+  DEFAULT_REMINDERS = [
+    { kind: :breakfast, time_of_day: "07:00", enabled: true },
+    { kind: :lunch, time_of_day: "12:00", enabled: true },
+    { kind: :dinner, time_of_day: "18:30", enabled: true },
+    { kind: :water, time_of_day: nil, enabled: true },
+    { kind: :exercise, time_of_day: "17:00", enabled: false },
+    { kind: :medication, time_of_day: "09:00", enabled: true },
+    { kind: :sleep, time_of_day: "22:00", enabled: true }
+  ].freeze
+
+  # Every patient starts with the standard reminder toggles, so Notifications
+  # isn't empty the moment an account is created. The exercise/meal catalogs
+  # are shared across all patients (see Exercise, MealPlanDay); only what a
+  # patient actually did (ExerciseLog/MealLog) is per-patient.
+  def assign_default_reminders
+    DEFAULT_REMINDERS.each do |data|
+      reminders.find_or_create_by!(kind: data[:kind]) do |r|
+        r.time_of_day = data[:time_of_day]
+        r.enabled = data[:enabled]
+      end
+    end
+  end
 
   def age
     return nil unless date_of_birth

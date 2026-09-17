@@ -51,6 +51,12 @@ module SarcoCareRails
     config.middleware.use ActionDispatch::Cookies
     config.middleware.use config.session_store, config.session_options
     config.middleware.use ActionDispatch::Flash
+    # Also needed for the admin dashboard's edit/delete forms: browsers can
+    # only submit GET/POST, so Rails' form helpers submit a real POST with a
+    # hidden `_method=patch`/`delete` field — api_only mode strips the
+    # middleware that rewrites the request method from that field, so every
+    # such form 404'd (the router only has PATCH/DELETE at that path).
+    config.middleware.use Rack::MethodOverride
 
     # Tests are being skipped for now; don't scaffold spec/factory files.
     config.generators.test_framework = false

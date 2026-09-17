@@ -2,12 +2,10 @@ module Admin
   class ExercisesController < BaseController
     before_action :set_exercise, only: [ :edit, :update, :destroy ]
 
-    ICON_OPTIONS = [
-      [ "Seated / reclining", "airline_seat_recline_normal" ],
-      [ "Weights", "fitness_center" ],
-      [ "Chair", "chair_alt" ],
-      [ "Balance / standing", "accessibility_new" ]
-    ].freeze
+    # The app only falls back to this icon if a video's thumbnail fails to
+    # load — not worth an admin picker, so every new exercise gets the same
+    # generic one.
+    DEFAULT_ICON = "fitness_center".freeze
 
     def index
       @exercises = Exercise.order(:name_en)
@@ -36,6 +34,7 @@ module Admin
         video_id: video_id,
         name_en: title,
         name_th: title,
+        icon: DEFAULT_ICON,
         key: unique_key_for(title)
       ))
       if @exercise.save
@@ -68,7 +67,7 @@ module Admin
     end
 
     def exercise_params
-      params.expect(exercise: [ :name_en, :name_th, :icon, :default_minutes ])
+      params.expect(exercise: [ :name_en, :name_th, :default_minutes ])
     end
 
     def unique_key_for(title)

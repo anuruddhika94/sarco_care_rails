@@ -20,9 +20,5 @@
     <%= f.label :default_minutes, "Duration (minutes)" %>
     <%= f.number_field :default_minutes, min: 1, value: @exercise.default_minutes || 10, required: true %>
   </div>
-  <div class="field">
-    <%= f.label :icon %>
-    <%= f.select :icon, Admin::ExercisesController::ICON_OPTIONS, { selected: @exercise.icon || "fitness_center" } %>
-  </div>
   <button type="submit" class="btn btn-primary"><%= admin_icon(:dumbbell, size: 16) %> Fetch title &amp; add</button>
 <% end %>

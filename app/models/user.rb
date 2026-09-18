@@ -59,7 +59,7 @@ class User < ApplicationRecord
 
   def avatar_url
     return nil unless avatar.attached?
-    Rails.application.routes.url_helpers.rails_blob_url(avatar)
+    Rails.application.routes.url_helpers.rails_blob_url(avatar, **Current.blob_url_options)
   end
 
   def serializable_hash(options = nil)

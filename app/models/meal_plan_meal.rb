@@ -12,7 +12,7 @@ class MealPlanMeal < ApplicationRecord
   # admin uploads a photo from the dashboard, the URL of that upload —
   # the uploaded file always wins so re-uploading replaces the seeded shot.
   def image
-    return Rails.application.routes.url_helpers.rails_blob_url(photo) if photo.attached?
+    return Rails.application.routes.url_helpers.rails_blob_url(photo, **Current.blob_url_options) if photo.attached?
     self[:image]
   end
 

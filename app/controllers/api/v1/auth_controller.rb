@@ -8,7 +8,7 @@ module Api
         if user.save
           render json: { token: token_for(user), user: user }, status: :created
         else
-          render json: { error: "Validation failed", errors: user.errors }, status: :unprocessable_entity
+          render json: { error: user.errors.full_messages.to_sentence, errors: user.errors }, status: :unprocessable_entity
         end
       end
 

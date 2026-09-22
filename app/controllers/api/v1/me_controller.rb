@@ -9,7 +9,7 @@ module Api
         if current_user.update(me_params)
           render json: current_user
         else
-          render json: { error: "Validation failed", errors: current_user.errors }, status: :unprocessable_entity
+          render json: { error: current_user.errors.full_messages.to_sentence, errors: current_user.errors }, status: :unprocessable_entity
         end
       end
 

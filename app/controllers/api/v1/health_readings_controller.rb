@@ -22,7 +22,7 @@ module Api
         if reading.save
           render json: reading, status: was_new ? :created : :ok
         else
-          render json: { error: "Validation failed", errors: reading.errors }, status: :unprocessable_entity
+          render json: { error: reading.errors.full_messages.to_sentence, errors: reading.errors }, status: :unprocessable_entity
         end
       end
 

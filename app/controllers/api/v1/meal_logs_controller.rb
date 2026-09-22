@@ -19,7 +19,7 @@ module Api
         if log.save
           render json: log, status: :created
         else
-          render json: { error: "Validation failed", errors: log.errors }, status: :unprocessable_entity
+          render json: { error: log.errors.full_messages.to_sentence, errors: log.errors }, status: :unprocessable_entity
         end
       end
 

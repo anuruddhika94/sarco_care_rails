@@ -43,7 +43,7 @@ module Api
         if link.save
           render json: link, status: :created
         else
-          render json: { error: "Validation failed", errors: link.errors }, status: :unprocessable_entity
+          render json: { error: link.errors.full_messages.to_sentence, errors: link.errors }, status: :unprocessable_entity
         end
       end
 

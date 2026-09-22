@@ -18,7 +18,7 @@ module Api
         if assessment.save
           render json: assessment, status: :created
         else
-          render json: { error: "Validation failed", errors: assessment.errors }, status: :unprocessable_entity
+          render json: { error: assessment.errors.full_messages.to_sentence, errors: assessment.errors }, status: :unprocessable_entity
         end
       end
     end

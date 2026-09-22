@@ -38,7 +38,10 @@ module Admin
     end
 
     def caretaker_params
-      params.expect(user: [ :full_name, :email, :phone_number ])
+      permitted = params.expect(user: [ :full_name, :email, :phone_number, :password ])
+      # A blank password means "keep the current one".
+      permitted.delete(:password) if permitted[:password].blank?
+      permitted
     end
   end
 end

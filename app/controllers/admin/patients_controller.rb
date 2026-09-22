@@ -39,7 +39,10 @@ module Admin
     end
 
     def patient_params
-      params.expect(user: [ :full_name, :email, :phone_number, :gender, :date_of_birth ])
+      permitted = params.expect(user: [ :full_name, :email, :phone_number, :gender, :date_of_birth, :password ])
+      # A blank password means "keep the current one".
+      permitted.delete(:password) if permitted[:password].blank?
+      permitted
     end
   end
 end

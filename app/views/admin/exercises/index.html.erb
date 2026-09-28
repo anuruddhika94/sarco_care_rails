@@ -17,9 +17,9 @@
         <% @exercises.each do |e| %>
           <tr>
             <td>
-              <% if e.video_id.present? %>
-                <a href="https://www.youtube.com/watch?v=<%= e.video_id %>" target="_blank" rel="noopener">
-                  <img src="https://img.youtube.com/vi/<%= e.video_id %>/default.jpg" width="72" height="54" style="border-radius:8px;object-fit:cover;display:block">
+              <% if e.thumbnail_url.present? %>
+                <a href="<%= e.video_id.present? ? "https://www.youtube.com/watch?v=#{e.video_id}" : e.thumbnail_url %>" target="_blank" rel="noopener">
+                  <img src="<%= e.thumbnail_url %>" width="72" height="54" style="border-radius:8px;object-fit:cover;display:block">
                 </a>
               <% else %>
                 <div class="icon-badge icon-badge-primary" style="width:54px;height:54px;"><%= admin_icon(:dumbbell) %></div>

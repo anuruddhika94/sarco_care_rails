@@ -1,10 +1,14 @@
 <p class="subtitle"><%= link_to "← All exercises", admin_exercises_path %></p>
 <h1>Edit exercise</h1>
 
-<% if @exercise.video_id.present? %>
-  <a href="https://www.youtube.com/watch?v=<%= @exercise.video_id %>" target="_blank" rel="noopener">
-    <img src="https://img.youtube.com/vi/<%= @exercise.video_id %>/mqdefault.jpg" style="border-radius:12px;max-width:280px;display:block;margin-bottom:20px">
-  </a>
+<% if @exercise.thumbnail_url.present? %>
+  <img src="<%= @exercise.thumbnail_url %>" style="border-radius:12px;max-width:280px;display:block;margin-bottom:8px">
+  <p class="subtitle" style="margin-bottom:20px">
+    <%= @exercise.thumbnail.attached? ? "Uploaded thumbnail" : "YouTube's own still" %>
+    <% if @exercise.video_id.present? %>
+      · <a href="https://www.youtube.com/watch?v=<%= @exercise.video_id %>" target="_blank" rel="noopener">watch on YouTube</a>
+    <% end %>
+  </p>
 <% end %>
 
 <% if @exercise.errors.any? %>
@@ -15,7 +19,7 @@
   </div>
 <% end %>
 
-<%= form_with model: @exercise, url: admin_exercise_path(@exercise), method: :patch do |f| %>
+<%= form_with model: @exercise, url: admin_exercise_path(@exercise), method: :patch, multipart: true do |f| %>
   <div class="field">
     <%= f.label :name_en, "Name (English)" %>
     <%= f.text_field :name_en %>
@@ -27,6 +31,13 @@
   <div class="field">
     <%= f.label :default_minutes, "Duration (minutes)" %>
     <%= f.number_field :default_minutes, min: 1 %>
+  </div>
+  <div class="field">
+    <%= f.label :thumbnail, "Thumbnail photo" %>
+    <%= f.file_field :thumbnail, accept: "image/*" %>
+    <p class="subtitle" style="margin:6px 0 0">
+      Replaces YouTube's still in the app. Landscape works best (16:9).
+    </p>
   </div>
   <button type="submit" class="btn btn-primary">Save changes</button>
 <% end %>

@@ -8,7 +8,7 @@ module Admin
     DEFAULT_ICON = "fitness_center".freeze
 
     def index
-      @exercises = Exercise.order(:name_en)
+      @exercises = Exercise.with_attached_thumbnail.order(:name_en)
     end
 
     def new
@@ -67,7 +67,7 @@ module Admin
     end
 
     def exercise_params
-      params.expect(exercise: [ :name_en, :name_th, :default_minutes ])
+      params.expect(exercise: [ :name_en, :name_th, :default_minutes, :thumbnail ])
     end
 
     def unique_key_for(title)

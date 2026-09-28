@@ -4,7 +4,7 @@ source "https://rubygems.org"
 gem "rails", "~> 8.1.3", ">= 8.1.3.1"
 # Pin below 3.0: json 3.0's JSON.parse dropped the positional-options arg that
 # this version of ActiveSupport still calls, breaking any jsonb (de)serialization.
-gem "json", "~> 2.9"
+gem "json", "~> 3.0"
 # Use postgresql as the database for Active Record
 gem "pg", "~> 1.1"
 # Use the Puma web server [https://github.com/puma/puma]

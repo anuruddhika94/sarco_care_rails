@@ -1,6 +1,8 @@
 module Admin
   # Session-based (not JWT) auth, separate from the mobile app's API.
   class BaseController < ActionController::Base
+    include TracksRequestOrigin
+
     layout "admin"
     protect_from_forgery with: :exception
 

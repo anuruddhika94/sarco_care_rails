@@ -41,10 +41,11 @@
 <% if @day.meal_plan_meals.any? %>
   <div class="table-wrap">
     <table>
-      <thead><tr><th>Slot</th><th>Title</th><th>Protein</th><th>Items</th><th></th></tr></thead>
+      <thead><tr><th>Photo</th><th>Slot</th><th>Title</th><th>Protein</th><th>Items</th><th></th></tr></thead>
       <tbody>
         <% @day.meal_plan_meals.order(:position).each do |meal| %>
           <tr>
+            <td><%= meal_thumbnail(meal) %></td>
             <td><span class="badge approved"><%= meal.slot.humanize %></span></td>
             <td>
               <div style="font-weight:700"><%= meal.title_en %></div>

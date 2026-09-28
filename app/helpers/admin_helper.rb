@@ -24,6 +24,27 @@ module AdminHelper
     content_tag(:div, admin_icon(name, size: size * 0.5), class: "icon-badge icon-badge-#{color}", style: "width:#{size}px;height:#{size}px")
   end
 
+  # Thumbnail for a meal plan meal: the uploaded photo, a photo URL if that is
+  # all the row has, or a placeholder. A bundled Flutter asset path (the
+  # seeded plan's photos) can't be served from here, so it gets the
+  # placeholder with the path as its tooltip.
+  def meal_thumbnail(meal, size: 52)
+    style = "width:#{size}px;height:#{size}px"
+
+    if meal.photo.attached?
+      return image_tag(meal.photo, class: "thumb", style: style, alt: meal.title_en, loading: "lazy")
+    end
+
+    raw_image = meal.read_attribute(:image).to_s
+    if raw_image.start_with?("http")
+      return image_tag(raw_image, class: "thumb", style: style, alt: meal.title_en, loading: "lazy")
+    end
+
+    content_tag(:div, admin_icon(:meal, size: size * 0.45),
+      class: "thumb thumb-empty", style: style,
+      title: raw_image.presence || "No photo")
+  end
+
   def initials(full_name)
     full_name.to_s.split.map { |w| w[0] }.first(2).join.upcase
   end

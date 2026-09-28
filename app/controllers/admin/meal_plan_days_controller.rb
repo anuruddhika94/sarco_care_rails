@@ -20,7 +20,7 @@ module Admin
     private
 
     def set_day
-      @day = MealPlanDay.find(params[:id])
+      @day = MealPlanDay.includes(meal_plan_meals: { photo_attachment: :blob }).find(params[:id])
     end
 
     def day_params

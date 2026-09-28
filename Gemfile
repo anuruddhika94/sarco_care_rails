@@ -38,6 +38,10 @@ gem "thruster", require: false
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 gem "image_processing", "~> 1.2"
 
+# Store uploaded photos in S3-compatible object storage (Cloudflare R2 in
+# production) — Render's container filesystem is wiped on every deploy.
+gem "aws-sdk-s3", "~> 1.177", require: false
+
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin Ajax possible
 gem "rack-cors"
 

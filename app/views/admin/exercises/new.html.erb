@@ -24,7 +24,8 @@
     <%= f.label :thumbnail, "Thumbnail photo (optional)" %>
     <%= f.file_field :thumbnail, accept: "image/*" %>
     <p class="subtitle" style="margin:6px 0 0">
-      Leave empty to use YouTube's own still. Landscape works best (16:9).
+      Leave empty to use YouTube's own still. The videos are Shorts, so
+      portrait (9:16) works best.
     </p>
   </div>
   <button type="submit" class="btn btn-primary"><%= admin_icon(:dumbbell, size: 16) %> Fetch title &amp; add</button>

@@ -10,7 +10,7 @@
   </div>
 <% end %>
 
-<%= form_with model: @exercise, url: admin_exercises_path, method: :post do |f| %>
+<%= form_with model: @exercise, url: admin_exercises_path, method: :post, multipart: true do |f| %>
   <div class="field">
     <label for="youtube_url">YouTube link</label>
     <input type="text" name="youtube_url" id="youtube_url" value="<%= params[:youtube_url] %>"
@@ -19,6 +19,13 @@
   <div class="field">
     <%= f.label :default_minutes, "Duration (minutes)" %>
     <%= f.number_field :default_minutes, min: 1, value: @exercise.default_minutes || 10, required: true %>
+  </div>
+  <div class="field">
+    <%= f.label :thumbnail, "Thumbnail photo (optional)" %>
+    <%= f.file_field :thumbnail, accept: "image/*" %>
+    <p class="subtitle" style="margin:6px 0 0">
+      Leave empty to use YouTube's own still. Landscape works best (16:9).
+    </p>
   </div>
   <button type="submit" class="btn btn-primary"><%= admin_icon(:dumbbell, size: 16) %> Fetch title &amp; add</button>
 <% end %>

@@ -30,7 +30,16 @@ module AdminHelper
 
   AVATAR_COLORS = %w[a b c d e].freeze
 
-  def avatar(full_name, size: 40)
+  # Takes a user (or a bare name, e.g. for admins, who have no photo): shows
+  # the uploaded profile photo when there is one, coloured initials otherwise.
+  def avatar(user, size: 40)
+    full_name = user.respond_to?(:full_name) ? user.full_name : user
+
+    if user.respond_to?(:avatar) && user.avatar.attached?
+      return image_tag(user.avatar, alt: full_name, loading: "lazy",
+        class: "avatar avatar-photo", style: "width:#{size}px;height:#{size}px")
+    end
+
     color = AVATAR_COLORS[full_name.to_s.sum % AVATAR_COLORS.length]
     content_tag(:div, initials(full_name), class: "avatar avatar-#{color}",
       style: "width:#{size}px;height:#{size}px;line-height:#{size}px;font-size:#{(size * 0.4).round}px")

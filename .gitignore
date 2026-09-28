@@ -34,3 +34,6 @@
 # Ignore local docs.
 /docs
 
+
+# Local database connection strings (credentials, never commit).
+/config/sarco-db-urls.env

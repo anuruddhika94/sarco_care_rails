@@ -3,7 +3,7 @@ module Admin
     before_action :set_patient, only: [ :show, :edit, :update, :destroy ]
 
     def index
-      @patients = User.patient.order(:full_name)
+      @patients = User.patient.with_attached_avatar.order(:full_name)
       if params[:q].present?
         q = "%#{params[:q]}%"
         @patients = @patients.where("full_name ILIKE :q OR phone_number ILIKE :q", q: q)

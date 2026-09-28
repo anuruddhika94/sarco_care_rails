@@ -1,6 +1,6 @@
 <p class="subtitle"><%= link_to "← All patients", admin_patients_path %></p>
 <div class="profile-header">
-  <%= avatar(@patient.full_name, size: 56) %>
+  <%= avatar(@patient, size: 56) %>
   <div>
     <h1 style="margin-bottom:2px"><%= @patient.full_name %></h1>
     <p class="subtitle" style="margin:0">
@@ -32,7 +32,7 @@
           <tr>
             <td>
               <div class="name-cell">
-                <%= avatar(link.caretaker.full_name, size: 32) %>
+                <%= avatar(link.caretaker, size: 32) %>
                 <%= link_to link.caretaker.full_name, admin_caretaker_path(link.caretaker) %>
               </div>
             </td>

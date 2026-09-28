@@ -59,7 +59,7 @@
           <tr>
             <td>
               <div class="name-cell">
-                <%= avatar(p.full_name, size: 32) %>
+                <%= avatar(p, size: 32) %>
                 <%= link_to p.full_name, admin_patient_path(p) %>
               </div>
             </td>
@@ -84,7 +84,7 @@
           <tr>
             <td>
               <div class="name-cell">
-                <%= avatar(c.full_name, size: 32) %>
+                <%= avatar(c, size: 32) %>
                 <%= link_to c.full_name, admin_caretaker_path(c) %>
               </div>
             </td>

@@ -3,7 +3,7 @@ module Admin
     before_action :set_caretaker, only: [ :show, :edit, :update, :destroy ]
 
     def index
-      @caretakers = User.caretaker.order(:full_name)
+      @caretakers = User.caretaker.with_attached_avatar.order(:full_name)
       if params[:q].present?
         q = "%#{params[:q]}%"
         @caretakers = @caretakers.where("full_name ILIKE :q OR phone_number ILIKE :q", q: q)

@@ -32,7 +32,10 @@
   </div>
   <div class="field">
     <%= f.label :image, "…or a photo URL, used only if no file is uploaded above" %>
-    <%= f.text_field :image, placeholder: "https://…" %>
+    <%#- read_attribute, because MealPlanMeal#image returns the uploaded
+          photo's URL when one is attached — rendering that here saved it
+          straight back into the column on the next submit. -%>
+    <%= f.text_field :image, value: @meal.read_attribute(:image), placeholder: "https://…" %>
   </div>
   <div class="field">
     <%= f.label :total_protein_en, "Total protein (English)" %>

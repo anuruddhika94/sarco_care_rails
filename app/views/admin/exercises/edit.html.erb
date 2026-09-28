@@ -2,7 +2,7 @@
 <h1>Edit exercise</h1>
 
 <% if @exercise.thumbnail_url.present? %>
-  <img src="<%= @exercise.thumbnail_url %>" style="border-radius:12px;max-width:280px;display:block;margin-bottom:8px">
+  <img src="<%= @exercise.thumbnail_url %>" style="border-radius:12px;max-width:280px;max-height:220px;object-fit:contain;background:var(--border);display:block;margin-bottom:8px">
   <p class="subtitle" style="margin-bottom:20px">
     <%= @exercise.thumbnail.attached? ? "Uploaded thumbnail" : "YouTube's own still" %>
     <% if @exercise.video_id.present? %>

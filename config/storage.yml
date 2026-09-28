@@ -6,17 +6,24 @@ local:
   service: Disk
   root: <%= Rails.root.join("storage") %>
 
-# Cloudflare R2 (S3-compatible), used in production. Files served through the
+# S3-compatible object storage, used in production: currently Neon Object
+# Storage, which lives in the same Neon project as the database. Works
+# unchanged against Cloudflare R2 or S3 itself. Photos are served through the
 # app's own /rails/active_storage/... URLs, so the bucket stays private.
-# Configured with R2_* env vars in the Render dashboard; see README.
-cloudflare:
+# Configured with the env vars below in the Render dashboard; see README.
+object_storage:
   service: S3
-  access_key_id: <%= ENV["R2_ACCESS_KEY_ID"] %>
-  secret_access_key: <%= ENV["R2_SECRET_ACCESS_KEY"] %>
-  bucket: <%= ENV["R2_BUCKET"] %>
-  endpoint: <%= ENV["R2_ENDPOINT"] %>
-  region: auto
-  # R2 rejects the checksums newer aws-sdk-s3 versions send by default.
+  access_key_id: <%= ENV["AWS_ACCESS_KEY_ID"] %>
+  secret_access_key: <%= ENV["AWS_SECRET_ACCESS_KEY"] %>
+  bucket: <%= ENV["S3_BUCKET"] %>
+  endpoint: <%= ENV["AWS_ENDPOINT_URL_S3"] %>
+  # Neon scopes buckets to a database branch rather than a region, but the
+  # SDK still wants a region string.
+  region: <%= ENV.fetch("AWS_REGION", "auto") %>
+  # Neon serves path-style URLs only (bucket in the path, not the hostname);
+  # R2 and S3 accept them too.
+  force_path_style: true
+  # Neon and R2 both reject the checksums newer aws-sdk-s3 versions send by default.
   request_checksum_calculation: when_required
   response_checksum_validation: when_required
 

@@ -32,16 +32,20 @@ object storage**: Render runs the app from a Docker container whose filesystem
 is wiped on every deploy and restart, so anything on local disk disappears (and
 the app then falls back to placeholder images).
 
-Production uses Cloudflare R2 (S3-compatible) whenever these environment
-variables are set in the Render dashboard, and silently falls back to local disk
-when they are not:
+Production uses Neon Object Storage (S3-compatible, in the same Neon project as
+the database) whenever these environment variables are set in the Render
+dashboard, and falls back to local disk when they are not:
 
 | Variable | Example | Where to find it |
 | --- | --- | --- |
-| `R2_BUCKET` | `sarco-care` | the bucket you create in R2 |
-| `R2_ENDPOINT` | `https://<account-id>.r2.cloudflarestorage.com` | R2 bucket settings → S3 API |
-| `R2_ACCESS_KEY_ID` | | R2 → Manage API tokens |
-| `R2_SECRET_ACCESS_KEY` | | shown once when the token is created |
+| `S3_BUCKET` | `sarcocarebucket` | the bucket name in Neon |
+| `AWS_ENDPOINT_URL_S3` | `https://…` | Neon → Object Storage → the branch's endpoint |
+| `AWS_ACCESS_KEY_ID` | | Neon scoped credential with storage read/write |
+| `AWS_SECRET_ACCESS_KEY` | | shown once when the credential is created |
+| `AWS_REGION` | optional, defaults to `auto` | |
 
 The bucket stays private: photos are served through the app's own
 `/rails/active_storage/...` URLs, not from the bucket directly.
+
+The same config works against Cloudflare R2 or Amazon S3 — only the endpoint,
+bucket and keys change.

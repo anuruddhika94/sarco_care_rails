@@ -21,7 +21,7 @@ Rails.application.configure do
   # Store uploaded files on the local file system (see config/storage.yml for options).
   # Object storage when it's configured (see config/storage.yml); the local
   # disk otherwise, which on Render only survives until the next deploy.
-  config.active_storage.service = ENV["R2_BUCKET"].present? ? :cloudflare : :local
+  config.active_storage.service = ENV["S3_BUCKET"].present? ? :object_storage : :local
 
   # Assume all access to the app is happening through a SSL-terminating reverse proxy.
   # config.assume_ssl = true

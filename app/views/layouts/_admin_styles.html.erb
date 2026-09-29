@@ -163,6 +163,16 @@ label { display: block; font-size: 13px; font-weight: 700; color: var(--text); m
 .auth-card .subtitle { text-align: center; }
 
 .section-title { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 700; color: var(--text-muted); margin: 28px 0 12px; text-transform: uppercase; letter-spacing: 0.03em; }
+/* Section heading with a date picker on the right. The date input has to opt
+   out of the full-width rule that every other input follows. */
+.date-bar { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.date-picker { display: flex; align-items: center; gap: 8px; margin-left: auto; flex-wrap: nowrap; }
+.date-picker .date-form { margin: 0; display: flex; }
+.date-picker input[type="date"] {
+  width: auto; min-width: 150px; margin: 0; padding: 8px 12px; text-transform: none;
+}
+.date-picker .btn { flex-shrink: 0; }
+
 .empty { color: var(--text-muted); font-size: 14px; padding: 20px; text-align: center; background: var(--surface); border: 1px dashed var(--border); border-radius: 14px; }
 .meta-row { display: flex; gap: 8px; align-items: center; margin-top: 16px; flex-wrap: wrap; }
 

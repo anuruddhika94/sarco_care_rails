@@ -21,17 +21,22 @@ module Admin
         last_seen: last_activity_on
       }
 
-      # The page opens on the patient's most recent day of activity — the one
-      # an admin actually wants to see — and the date picker moves from there.
-      @date = parsed_date || last_activity_on || Date.current
-      @meal_logs = @patient.meal_logs.where(eaten_on: @date)
+      # Each section has its own date, so an admin can line up, say, a meal on
+      # one day against a weight taken on another. Each one opens on that
+      # section's own most recent entry.
+      @meal_date = date_param(:meal_date, @patient.meal_logs.maximum(:eaten_on))
+      @exercise_date = date_param(:exercise_date, @patient.exercise_logs.maximum(:completed_on))
+      @health_date = date_param(:health_date, @patient.health_readings.maximum(:recorded_on))
+      @goal_date = date_param(:goal_date, @patient.daily_goal_completions.maximum(:date))
+
+      @meal_logs = @patient.meal_logs.where(eaten_on: @meal_date)
                            .includes(meal_plan_meal: [ :meal_plan_day, { photo_attachment: :blob } ])
                            .order(:id)
-      @exercise_logs = @patient.exercise_logs.where(completed_on: @date)
+      @exercise_logs = @patient.exercise_logs.where(completed_on: @exercise_date)
                                .includes(exercise: { thumbnail_attachment: :blob })
                                .order(:id)
-      @health_readings = @patient.health_readings.where(recorded_on: @date)
-      @daily_goal = @patient.daily_goal_completions.find_by(date: @date)
+      @health_readings = @patient.health_readings.where(recorded_on: @health_date)
+      @daily_goal = @patient.daily_goal_completions.find_by(date: @goal_date)
     end
 
     def edit
@@ -52,10 +57,16 @@ module Admin
 
     private
 
-    def parsed_date
-      Date.parse(params[:date]) if params[:date].present?
+    # A date from the query string, falling back to the section's own latest
+    # entry and finally to today. Ignores anything unparseable rather than
+    # blowing up on a hand-edited URL.
+    def date_param(key, fallback)
+      value = params[key]
+      return fallback || Date.current if value.blank?
+
+      Date.parse(value)
     rescue Date::Error
-      nil
+      fallback || Date.current
     end
 
     # The most recent day this patient did anything at all.

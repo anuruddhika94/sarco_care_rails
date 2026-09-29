@@ -1,0 +1,22 @@
+<%# A day selector for one section of the patient page.
+    Locals: patient, param (query-string key), date.
+    Every link and the form itself carry the other sections' dates along, so
+    moving one section's day leaves the others where they were. %>
+<% others = request.query_parameters.except(param.to_s, "date") %>
+<div class="date-picker">
+  <%= link_to "‹", admin_patient_path(patient, others.merge(param => date - 1)),
+        class: "btn btn-outline btn-sm", title: "Previous day" %>
+  <%= form_with url: admin_patient_path(patient), method: :get, local: true, class: "date-form" do %>
+    <% others.each do |key, value| %>
+      <%= hidden_field_tag key, value %>
+    <% end %>
+    <input type="date" name="<%= param %>" value="<%= date.to_fs(:db) %>"
+      max="<%= Date.current.to_fs(:db) %>" onchange="this.form.submit()">
+  <% end %>
+  <%= link_to "›", admin_patient_path(patient, others.merge(param => date + 1)),
+        class: "btn btn-outline btn-sm", title: "Next day" %>
+  <% if date != Date.current %>
+    <%= link_to "Today", admin_patient_path(patient, others.merge(param => Date.current)),
+          class: "btn btn-outline btn-sm" %>
+  <% end %>
+</div>

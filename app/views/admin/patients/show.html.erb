@@ -80,30 +80,25 @@
   </div>
 </div>
 
-<div class="section-title" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-  <span><%= admin_icon(:calendar, size: 16) %> Activity on <%= @date.strftime("%b %d, %Y") %></span>
-  <%= form_with url: admin_patient_path(@patient), method: :get, local: true,
-        style: "display:flex;gap:8px;align-items:center;margin-left:auto" do %>
-    <%= link_to "‹", admin_patient_path(@patient, date: @date - 1), class: "btn btn-outline btn-sm", title: "Previous day" %>
-    <input type="date" name="date" value="<%= @date.to_fs(:db) %>" max="<%= Date.current.to_fs(:db) %>"
-      onchange="this.form.submit()" style="padding:8px 10px">
-    <%= link_to "›", admin_patient_path(@patient, date: @date + 1), class: "btn btn-outline btn-sm", title: "Next day" %>
-    <% if @date != Date.current %>
-      <%= link_to "Today", admin_patient_path(@patient, date: Date.current), class: "btn btn-outline btn-sm" %>
-    <% end %>
-  <% end %>
+<div class="section-title date-bar">
+  <span><%= admin_icon(:clipboard, size: 16) %> Daily goals · <%= @goal_date.strftime("%b %d, %Y") %></span>
+  <%= render "date_picker", patient: @patient, param: :goal_date, date: @goal_date %>
 </div>
-
 <% if @daily_goal %>
   <p class="subtitle">
-    Daily goals: protein <%= @daily_goal.protein_done ? "✓" : "—" %> ·
+    Protein <%= @daily_goal.protein_done ? "✓" : "—" %> ·
     exercise <%= @daily_goal.exercise_done ? "✓" : "—" %> ·
     water <%= @daily_goal.water_done ? "✓" : "—" %>
     <span class="badge <%= @daily_goal.score == 100 ? "approved" : (@daily_goal.score.zero? ? "declined" : "pending") %>"><%= @daily_goal.score %>%</span>
   </p>
+<% else %>
+  <p class="empty">Nothing recorded on this day.</p>
 <% end %>
 
-<div class="section-title"><%= admin_icon(:meal, size: 16) %> Meals</div>
+<div class="section-title date-bar">
+  <span><%= admin_icon(:meal, size: 16) %> Meals · <%= @meal_date.strftime("%b %d, %Y") %></span>
+  <%= render "date_picker", patient: @patient, param: :meal_date, date: @meal_date %>
+</div>
 <% if @meal_logs.any? %>
   <div class="table-wrap">
     <table>
@@ -128,7 +123,10 @@
   <p class="empty">No meals logged on this day.</p>
 <% end %>
 
-<div class="section-title"><%= admin_icon(:dumbbell, size: 16) %> Exercises</div>
+<div class="section-title date-bar">
+  <span><%= admin_icon(:dumbbell, size: 16) %> Exercises · <%= @exercise_date.strftime("%b %d, %Y") %></span>
+  <%= render "date_picker", patient: @patient, param: :exercise_date, date: @exercise_date %>
+</div>
 <% if @exercise_logs.any? %>
   <div class="table-wrap">
     <table>
@@ -155,7 +153,10 @@
   <p class="empty">No exercises completed on this day.</p>
 <% end %>
 
-<div class="section-title"><%= admin_icon(:heart, size: 16) %> Health readings</div>
+<div class="section-title date-bar">
+  <span><%= admin_icon(:heart, size: 16) %> Health readings · <%= @health_date.strftime("%b %d, %Y") %></span>
+  <%= render "date_picker", patient: @patient, param: :health_date, date: @health_date %>
+</div>
 <% if @health_readings.any? %>
   <div class="table-wrap">
     <table>

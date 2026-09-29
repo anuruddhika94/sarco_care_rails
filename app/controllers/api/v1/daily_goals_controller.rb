@@ -12,11 +12,15 @@ module Api
         render json: goals
       end
 
-      # Upserts the goals for one day (today unless a date is given). Used by
-      # the checkboxes on the app's home screen.
+      # Upserts the goals for one day (today unless a date is given), from the
+      # checkboxes on the app's home screen. Ticking a goal is the patient
+      # saying "I did this", so a caretaker can look but not tick.
       def update
-        patient = acting_patient
-        return unless patient
+        unless current_user.patient?
+          return render json: { error: "Only a patient can tick their own goals" }, status: :forbidden
+        end
+
+        patient = current_user
 
         date = params[:date].presence || Date.current
         goals = patient.daily_goal_completions.find_or_initialize_by(date: date)

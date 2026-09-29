@@ -17,7 +17,6 @@ module Api
         log = patient.meal_logs.new(meal_log_params)
         log.eaten_on ||= Date.current
         if log.save
-          DailyGoalCompletion.mark(patient, log.eaten_on, :protein_done)
           render json: log, status: :created
         else
           render json: { error: log.errors.full_messages.to_sentence, errors: log.errors }, status: :unprocessable_entity

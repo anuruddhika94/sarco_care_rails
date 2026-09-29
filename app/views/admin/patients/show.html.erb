@@ -46,6 +46,113 @@
   <p class="empty">No linked caretakers.</p>
 <% end %>
 
+<div class="section-title"><%= admin_icon(:clock, size: 16) %> Activity</div>
+<div class="stat-grid">
+  <div class="stat-card">
+    <div class="top-row"><div class="icon-badge icon-badge-primary"><%= admin_icon(:meal) %></div></div>
+    <div>
+      <div class="value"><%= @activity_totals[:meals] %></div>
+      <div class="label">Meals logged</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="top-row"><div class="icon-badge icon-badge-blue"><%= admin_icon(:dumbbell) %></div></div>
+    <div>
+      <div class="value"><%= @activity_totals[:exercises] %></div>
+      <div class="label">Exercises completed</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="top-row"><div class="icon-badge icon-badge-gold"><%= admin_icon(:clock) %></div></div>
+    <div>
+      <div class="value"><%= @activity_totals[:minutes] %></div>
+      <div class="label">Minutes exercised</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="top-row"><div class="icon-badge icon-badge-primary"><%= admin_icon(:calendar) %></div></div>
+    <div>
+      <div class="value" style="font-size:22px">
+        <%= @activity_totals[:last_seen] ? @activity_totals[:last_seen].strftime("%b %d, %Y") : "—" %>
+      </div>
+      <div class="label">Last activity</div>
+    </div>
+  </div>
+</div>
+
+<% if @daily_goals.any? %>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Day</th><th>Protein</th><th>Exercise</th><th>Water</th><th>Score</th></tr></thead>
+      <tbody>
+        <% @daily_goals.each do |g| %>
+          <tr>
+            <td><%= g.date.strftime("%b %d, %Y") %></td>
+            <td><%= g.protein_done ? "✓" : "—" %></td>
+            <td><%= g.exercise_done ? "✓" : "—" %></td>
+            <td><%= g.water_done ? "✓" : "—" %></td>
+            <td><span class="badge <%= g.score == 100 ? "approved" : (g.score.zero? ? "declined" : "pending") %>"><%= g.score %>%</span></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% end %>
+
+<div class="section-title"><%= admin_icon(:meal, size: 16) %> Recent meals</div>
+<% if @meal_logs.any? %>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Date</th><th></th><th>Meal</th><th>Slot</th><th>Protein</th></tr></thead>
+      <tbody>
+        <% @meal_logs.each do |log| %>
+          <% meal = log.meal_plan_meal %>
+          <tr>
+            <td style="white-space:nowrap"><%= log.eaten_on.strftime("%b %d, %Y") %></td>
+            <td><%= meal_thumbnail(meal, size: 40) %></td>
+            <td>
+              <div style="font-weight:700"><%= meal.title_en %></div>
+              <div style="color:var(--text-muted);font-size:13px"><%= meal.title_th %></div>
+            </td>
+            <td><span class="badge approved"><%= meal.slot.humanize %></span></td>
+            <td><%= meal.total_protein_en %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% else %>
+  <p class="empty">No meals logged yet.</p>
+<% end %>
+
+<div class="section-title"><%= admin_icon(:dumbbell, size: 16) %> Recent exercises</div>
+<% if @exercise_logs.any? %>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Date</th><th></th><th>Exercise</th><th>Minutes</th></tr></thead>
+      <tbody>
+        <% @exercise_logs.each do |log| %>
+          <tr>
+            <td style="white-space:nowrap"><%= log.completed_on.strftime("%b %d, %Y") %></td>
+            <td>
+              <% if log.exercise.thumbnail_url.present? %>
+                <img src="<%= log.exercise.thumbnail_url %>" style="width:32px;height:44px;border-radius:6px;object-fit:contain;background:var(--border);display:block">
+              <% end %>
+            </td>
+            <td>
+              <div style="font-weight:700"><%= log.exercise.name_en %></div>
+              <div style="color:var(--text-muted);font-size:13px"><%= log.exercise.name_th %></div>
+            </td>
+            <td><%= log.minutes %> min</td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% else %>
+  <p class="empty">No exercises completed yet.</p>
+<% end %>
+
 <div class="section-title"><%= admin_icon(:heart, size: 16) %> Recent health readings</div>
 <% if @health_readings.any? %>
   <div class="table-wrap">

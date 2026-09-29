@@ -1,0 +1,30 @@
+name: Keep the API awake during the day
+
+# Render's free web services spin down after 15 minutes of inactivity and take
+# about a minute to start again, which looks like a broken app to whoever
+# opens it first. This pings the health endpoint every 10 minutes during Thai
+# waking hours (07:00–22:00 ICT = 00:00–15:00 UTC).
+#
+# Deliberately not around the clock: a free workspace gets 750 instance hours
+# per calendar month, and a month is ~730 hours, so a 24/7 ping would leave no
+# margin at all. Daytime only costs roughly 450 hours.
+on:
+  schedule:
+    - cron: "*/10 0-14 * * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping /up
+        run: |
+          # --max-time is generous: if the service had gone to sleep, this
+          # request is the one paying the cold-start cost.
+          code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 120 \
+            https://sarco-care-rails.onrender.com/up)
+          echo "Health check returned HTTP $code"
+          # A 5xx means the app is up but unhealthy, which is worth failing on.
+          if [ "$code" -ge 500 ] || [ "$code" -eq 000 ]; then
+            exit 1
+          fi

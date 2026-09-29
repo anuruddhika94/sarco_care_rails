@@ -42,5 +42,66 @@
       <% if alert %><div class="flash alert"><%= alert %></div><% end %>
       <%= yield %>
     </div>
-  </body>
+  
+<script>
+  // The patient page's day pickers swap just their own section in, instead of
+  // reloading the whole page. Falls back to normal navigation if anything
+  // goes wrong, so the pickers keep working without JavaScript.
+  (function () {
+    function sectionOf(el) {
+      var wrap = el.closest('[data-section]');
+      return wrap ? wrap.getAttribute('data-section') : null;
+    }
+
+    async function swap(section, url) {
+      var wrap = document.querySelector('[data-section="' + section + '"]');
+      if (!wrap) { window.location = url; return; }
+      wrap.classList.add('is-loading');
+      try {
+        var sep = url.indexOf('?') === -1 ? '?' : '&';
+        var response = await fetch(url + sep + 'section=' + section, {
+          headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        });
+        if (!response.ok) throw new Error(response.status);
+        var html = await response.text();
+        // Parse rather than assign: development prepends an HTML comment to
+        // every rendered partial, and whitespace varies.
+        var holder = document.createElement('div');
+        holder.innerHTML = html;
+        var fresh = holder.querySelector('[data-section="' + section + '"]');
+        if (fresh) {
+          wrap.replaceWith(fresh);
+        } else {
+          wrap.outerHTML = html;
+        }
+        // Keep the address bar honest, so a refresh or a shared link shows
+        // the same days.
+        window.history.replaceState({}, '', url);
+      } catch (e) {
+        window.location = url;
+      }
+    }
+
+    document.addEventListener('change', function (event) {
+      var input = event.target;
+      if (input.type !== 'date') return;
+      var section = sectionOf(input);
+      if (!section) return;
+      event.preventDefault();
+      var form = input.form;
+      var params = new URLSearchParams(new FormData(form));
+      swap(section, form.action + '?' + params.toString());
+    });
+
+    document.addEventListener('click', function (event) {
+      var link = event.target.closest('.date-picker a');
+      if (!link) return;
+      var section = sectionOf(link);
+      if (!section) return;
+      event.preventDefault();
+      swap(section, link.href);
+    });
+  })();
+</script>
+</body>
 </html>

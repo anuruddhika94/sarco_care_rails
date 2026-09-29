@@ -80,102 +80,13 @@
   </div>
 </div>
 
-<div class="section-title date-bar">
-  <span><%= admin_icon(:clipboard, size: 16) %> Daily goals · <%= @goal_date.strftime("%b %d, %Y") %></span>
-  <%= render "date_picker", patient: @patient, param: :goal_date, date: @goal_date %>
-</div>
-<% if @daily_goal %>
-  <p class="subtitle">
-    Protein <%= @daily_goal.protein_done ? "✓" : "—" %> ·
-    exercise <%= @daily_goal.exercise_done ? "✓" : "—" %> ·
-    water <%= @daily_goal.water_done ? "✓" : "—" %>
-    <span class="badge <%= @daily_goal.score == 100 ? "approved" : (@daily_goal.score.zero? ? "declined" : "pending") %>"><%= @daily_goal.score %>%</span>
-  </p>
-<% else %>
-  <p class="empty">Nothing recorded on this day.</p>
-<% end %>
+<%= render "admin/patients/goals_section" %>
 
-<div class="section-title date-bar">
-  <span><%= admin_icon(:meal, size: 16) %> Meals · <%= @meal_date.strftime("%b %d, %Y") %></span>
-  <%= render "date_picker", patient: @patient, param: :meal_date, date: @meal_date %>
-</div>
-<% if @meal_logs.any? %>
-  <div class="table-wrap">
-    <table>
-      <thead><tr><th></th><th>Meal</th><th>Slot</th><th>Protein</th></tr></thead>
-      <tbody>
-        <% @meal_logs.each do |log| %>
-          <% meal = log.meal_plan_meal %>
-          <tr>
-            <td><%= meal_thumbnail(meal, size: 40) %></td>
-            <td>
-              <div style="font-weight:700"><%= meal.title_en %></div>
-              <div style="color:var(--text-muted);font-size:13px"><%= meal.title_th %></div>
-            </td>
-            <td><span class="badge approved"><%= meal.slot.humanize %></span></td>
-            <td><%= meal.total_protein_en %></td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
-  </div>
-<% else %>
-  <p class="empty">No meals logged on this day.</p>
-<% end %>
+<%= render "admin/patients/meals_section" %>
 
-<div class="section-title date-bar">
-  <span><%= admin_icon(:dumbbell, size: 16) %> Exercises · <%= @exercise_date.strftime("%b %d, %Y") %></span>
-  <%= render "date_picker", patient: @patient, param: :exercise_date, date: @exercise_date %>
-</div>
-<% if @exercise_logs.any? %>
-  <div class="table-wrap">
-    <table>
-      <thead><tr><th></th><th>Exercise</th><th>Minutes</th></tr></thead>
-      <tbody>
-        <% @exercise_logs.each do |log| %>
-          <tr>
-            <td>
-              <% if log.exercise.thumbnail_url.present? %>
-                <img src="<%= log.exercise.thumbnail_url %>" style="width:32px;height:44px;border-radius:6px;object-fit:contain;background:var(--border);display:block">
-              <% end %>
-            </td>
-            <td>
-              <div style="font-weight:700"><%= log.exercise.name_en %></div>
-              <div style="color:var(--text-muted);font-size:13px"><%= log.exercise.name_th %></div>
-            </td>
-            <td><%= log.minutes %> min</td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
-  </div>
-<% else %>
-  <p class="empty">No exercises completed on this day.</p>
-<% end %>
+<%= render "admin/patients/exercises_section" %>
 
-<div class="section-title date-bar">
-  <span><%= admin_icon(:heart, size: 16) %> Health readings · <%= @health_date.strftime("%b %d, %Y") %></span>
-  <%= render "date_picker", patient: @patient, param: :health_date, date: @health_date %>
-</div>
-<% if @health_readings.any? %>
-  <div class="table-wrap">
-    <table>
-      <thead><tr><th>Weight</th><th>Height</th><th>BMI</th><th>Calf</th></tr></thead>
-      <tbody>
-        <% @health_readings.each do |r| %>
-          <tr>
-            <td><%= r.weight_kg ? "#{r.weight_kg} kg" : "—" %></td>
-            <td><%= r.height_cm ? "#{r.height_cm} cm" : "—" %></td>
-            <td><%= r.bmi || "—" %></td>
-            <td><%= r.calf_cm ? "#{r.calf_cm} cm" : "—" %></td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
-  </div>
-<% else %>
-  <p class="empty">Nothing recorded on this day.</p>
-<% end %>
+<%= render "admin/patients/health_section" %>
 
 <div class="section-title"><%= admin_icon(:clipboard, size: 16) %> Recent SARC-F assessments</div>
 <% if @assessments.any? %>

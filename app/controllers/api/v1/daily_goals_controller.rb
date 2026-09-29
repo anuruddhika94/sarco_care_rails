@@ -12,7 +12,27 @@ module Api
         render json: goals
       end
 
+      # Upserts the goals for one day (today unless a date is given). Used by
+      # the checkboxes on the app's home screen.
+      def update
+        patient = acting_patient
+        return unless patient
+
+        date = params[:date].presence || Date.current
+        goals = patient.daily_goal_completions.find_or_initialize_by(date: date)
+        goals.assign_attributes(goal_params)
+        if goals.save
+          render json: goals
+        else
+          render json: { error: goals.errors.full_messages.to_sentence, errors: goals.errors }, status: :unprocessable_entity
+        end
+      end
+
       private
+
+      def goal_params
+        params.permit(:protein_done, :exercise_done, :water_done)
+      end
 
       def range_start(range)
         case range

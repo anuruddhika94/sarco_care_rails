@@ -3,15 +3,18 @@
     Every link and the form itself carry the other sections' dates along, so
     moving one section's day leaves the others where they were. %>
 <% others = request.query_parameters.except(param.to_s, "date") %>
-<div class="date-picker">
+<div class="date-picker" data-picker="<%= param %>">
   <%= link_to "‹", admin_patient_path(patient, others.merge(param => date - 1)),
         class: "btn btn-outline btn-sm", title: "Previous day" %>
   <%= form_with url: admin_patient_path(patient), method: :get, local: true, class: "date-form" do %>
     <% others.each do |key, value| %>
       <%= hidden_field_tag key, value %>
     <% end %>
+    <%# No inline onchange: the admin script picks the change up and swaps the
+        section in. Without JavaScript the ‹ › links still navigate normally. %>
     <input type="date" name="<%= param %>" value="<%= date.to_fs(:db) %>"
-      max="<%= Date.current.to_fs(:db) %>" onchange="this.form.submit()">
+      max="<%= Date.current.to_fs(:db) %>">
+    <noscript><button type="submit" class="btn btn-outline btn-sm">Go</button></noscript>
   <% end %>
   <%= link_to "›", admin_patient_path(patient, others.merge(param => date + 1)),
         class: "btn btn-outline btn-sm", title: "Next day" %>

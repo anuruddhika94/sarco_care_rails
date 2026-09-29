@@ -1,0 +1,25 @@
+<div class="patient-section" data-section="health">
+<div class="section-title date-bar">
+  <span><%= admin_icon(:heart, size: 16) %> Health readings · <%= @health_date.strftime("%b %d, %Y") %></span>
+  <%= render "date_picker", patient: @patient, param: :health_date, date: @health_date %>
+</div>
+<% if @health_readings.any? %>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Weight</th><th>Height</th><th>BMI</th><th>Calf</th></tr></thead>
+      <tbody>
+        <% @health_readings.each do |r| %>
+          <tr>
+            <td><%= r.weight_kg ? "#{r.weight_kg} kg" : "—" %></td>
+            <td><%= r.height_cm ? "#{r.height_cm} cm" : "—" %></td>
+            <td><%= r.bmi || "—" %></td>
+            <td><%= r.calf_cm ? "#{r.calf_cm} cm" : "—" %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% else %>
+  <p class="empty">Nothing recorded on this day.</p>
+<% end %>
+</div>

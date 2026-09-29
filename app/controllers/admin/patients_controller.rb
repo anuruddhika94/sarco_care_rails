@@ -1,5 +1,8 @@
 module Admin
   class PatientsController < BaseController
+    # Sections the page can refresh on their own (see _date_picker).
+    SECTIONS = %w[goals meals exercises health].freeze
+
     before_action :set_patient, only: [ :show, :edit, :update, :destroy ]
 
     def index
@@ -37,6 +40,12 @@ module Admin
                                .order(:id)
       @health_readings = @patient.health_readings.where(recorded_on: @health_date)
       @daily_goal = @patient.daily_goal_completions.find_by(date: @goal_date)
+
+      # The page's date pickers fetch just their own section and swap it in,
+      # so changing a day doesn't reload everything.
+      return unless SECTIONS.include?(params[:section])
+
+      render partial: "admin/patients/#{params[:section]}_section", layout: false
     end
 
     def edit

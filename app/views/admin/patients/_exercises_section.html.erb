@@ -1,0 +1,31 @@
+<div class="patient-section" data-section="exercises">
+<div class="section-title date-bar">
+  <span><%= admin_icon(:dumbbell, size: 16) %> Exercises · <%= @exercise_date.strftime("%b %d, %Y") %></span>
+  <%= render "date_picker", patient: @patient, param: :exercise_date, date: @exercise_date %>
+</div>
+<% if @exercise_logs.any? %>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th></th><th>Exercise</th><th>Minutes</th></tr></thead>
+      <tbody>
+        <% @exercise_logs.each do |log| %>
+          <tr>
+            <td>
+              <% if log.exercise.thumbnail_url.present? %>
+                <img src="<%= log.exercise.thumbnail_url %>" style="width:32px;height:44px;border-radius:6px;object-fit:contain;background:var(--border);display:block">
+              <% end %>
+            </td>
+            <td>
+              <div style="font-weight:700"><%= log.exercise.name_en %></div>
+              <div style="color:var(--text-muted);font-size:13px"><%= log.exercise.name_th %></div>
+            </td>
+            <td><%= log.minutes %> min</td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% else %>
+  <p class="empty">No exercises completed on this day.</p>
+<% end %>
+</div>

@@ -17,6 +17,7 @@ module Api
         log = patient.exercise_logs.new(exercise_log_params)
         log.completed_on ||= Date.current
         if log.save
+          DailyGoalCompletion.mark(patient, log.completed_on, :exercise_done)
           render json: log, status: :created
         else
           render json: { error: log.errors.full_messages.to_sentence, errors: log.errors }, status: :unprocessable_entity

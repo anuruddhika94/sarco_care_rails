@@ -45,6 +45,7 @@ Rails.application.routes.draw do
       resources :reminders, only: [ :index, :update ]
 
       resources :daily_goals, only: [ :index ]
+      resource :daily_goal, only: [ :update ], controller: :daily_goals
     end
   end
 end

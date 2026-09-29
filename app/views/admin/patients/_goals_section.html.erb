@@ -1,0 +1,16 @@
+<div class="patient-section" data-section="goals">
+<div class="section-title date-bar">
+  <span><%= admin_icon(:clipboard, size: 16) %> Daily goals · <%= @goal_date.strftime("%b %d, %Y") %></span>
+  <%= render "date_picker", patient: @patient, param: :goal_date, date: @goal_date %>
+</div>
+<% if @daily_goal %>
+  <p class="subtitle">
+    Protein <%= @daily_goal.protein_done ? "✓" : "—" %> ·
+    exercise <%= @daily_goal.exercise_done ? "✓" : "—" %> ·
+    water <%= @daily_goal.water_done ? "✓" : "—" %>
+    <span class="badge <%= @daily_goal.score == 100 ? "approved" : (@daily_goal.score.zero? ? "declined" : "pending") %>"><%= @daily_goal.score %>%</span>
+  </p>
+<% else %>
+  <p class="empty">Nothing recorded on this day.</p>
+<% end %>
+</div>

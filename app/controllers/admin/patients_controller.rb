@@ -11,24 +11,27 @@ module Admin
     end
 
     def show
-      @health_readings = @patient.health_readings.order(recorded_on: :desc).limit(10)
       @assessments = @patient.assessments.order(completed_at: :desc).limit(10)
       @caretakers = @patient.approved_caretaker_links.includes(:caretaker)
-      @meal_logs = @patient.meal_logs
-                           .includes(meal_plan_meal: [ :meal_plan_day, { photo_attachment: :blob } ])
-                           .order(eaten_on: :desc, id: :desc).limit(15)
-      @exercise_logs = @patient.exercise_logs
-                               .includes(exercise: { thumbnail_attachment: :blob })
-                               .order(completed_on: :desc, id: :desc).limit(15)
-      @daily_goals = @patient.daily_goal_completions.order(date: :desc).limit(7)
+
       @activity_totals = {
         meals: @patient.meal_logs.count,
         exercises: @patient.exercise_logs.count,
         minutes: @patient.exercise_logs.sum(:minutes),
-        last_seen: [ @patient.meal_logs.maximum(:eaten_on),
-                     @patient.exercise_logs.maximum(:completed_on),
-                     @patient.health_readings.maximum(:recorded_on) ].compact.max
+        last_seen: last_activity_on
       }
+
+      # The page opens on the patient's most recent day of activity — the one
+      # an admin actually wants to see — and the date picker moves from there.
+      @date = parsed_date || last_activity_on || Date.current
+      @meal_logs = @patient.meal_logs.where(eaten_on: @date)
+                           .includes(meal_plan_meal: [ :meal_plan_day, { photo_attachment: :blob } ])
+                           .order(:id)
+      @exercise_logs = @patient.exercise_logs.where(completed_on: @date)
+                               .includes(exercise: { thumbnail_attachment: :blob })
+                               .order(:id)
+      @health_readings = @patient.health_readings.where(recorded_on: @date)
+      @daily_goal = @patient.daily_goal_completions.find_by(date: @date)
     end
 
     def edit
@@ -48,6 +51,19 @@ module Admin
     end
 
     private
+
+    def parsed_date
+      Date.parse(params[:date]) if params[:date].present?
+    rescue Date::Error
+      nil
+    end
+
+    # The most recent day this patient did anything at all.
+    def last_activity_on
+      @last_activity_on ||= [ @patient.meal_logs.maximum(:eaten_on),
+                              @patient.exercise_logs.maximum(:completed_on),
+                              @patient.health_readings.maximum(:recorded_on) ].compact.max
+    end
 
     def set_patient
       @patient = User.patient.find(params[:id])

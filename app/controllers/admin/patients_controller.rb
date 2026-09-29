@@ -24,13 +24,14 @@ module Admin
         last_seen: last_activity_on
       }
 
-      # Each section has its own date, so an admin can line up, say, a meal on
-      # one day against a weight taken on another. Each one opens on that
-      # section's own most recent entry.
-      @meal_date = date_param(:meal_date, @patient.meal_logs.maximum(:eaten_on))
-      @exercise_date = date_param(:exercise_date, @patient.exercise_logs.maximum(:completed_on))
-      @health_date = date_param(:health_date, @patient.health_readings.maximum(:recorded_on))
-      @goal_date = date_param(:goal_date, @patient.daily_goal_completions.maximum(:date))
+      # Every section opens on today and moves independently, so an admin can
+      # line up, say, a meal on one day against a weight taken on another.
+      # "Last activity" in the summary above says where to look if today is
+      # empty.
+      @meal_date = date_param(:meal_date)
+      @exercise_date = date_param(:exercise_date)
+      @health_date = date_param(:health_date)
+      @goal_date = date_param(:goal_date)
 
       @meal_logs = @patient.meal_logs.where(eaten_on: @meal_date)
                            .includes(meal_plan_meal: [ :meal_plan_day, { photo_attachment: :blob } ])
@@ -66,16 +67,15 @@ module Admin
 
     private
 
-    # A date from the query string, falling back to the section's own latest
-    # entry and finally to today. Ignores anything unparseable rather than
-    # blowing up on a hand-edited URL.
-    def date_param(key, fallback)
+    # A date from the query string, defaulting to today. Ignores anything
+    # unparseable rather than blowing up on a hand-edited URL.
+    def date_param(key)
       value = params[key]
-      return fallback || Date.current if value.blank?
+      return Date.current if value.blank?
 
       Date.parse(value)
     rescue Date::Error
-      fallback || Date.current
+      Date.current
     end
 
     # The most recent day this patient did anything at all.

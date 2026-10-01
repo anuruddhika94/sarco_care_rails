@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 8.1.3", ">= 8.1.3.1"
+gem "rails", "~> 8.1.4"
 # Pin below 3.0: json 3.0's JSON.parse dropped the positional-options arg that
 # this version of ActiveSupport still calls, breaking any jsonb (de)serialization.
 gem "json", "~> 2.9"
